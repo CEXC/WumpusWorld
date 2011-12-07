@@ -4,8 +4,7 @@ import model.wumpusworld.agents.AgentAction;
 import model.wumpusworld.agents.CompleteCavePerceivingAgent;
 import model.wumpusworld.environment.CompleteCavePerception;
 
-public class exampleClass extends CompleteCavePerceivingAgent {
-
+public class SimpleAgent extends CompleteCavePerceivingAgent{
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
@@ -17,5 +16,4 @@ public class exampleClass extends CompleteCavePerceivingAgent {
 		// TODO Auto-generated method stub
 		return AgentAction.WAIT;
 	}
-
 }
