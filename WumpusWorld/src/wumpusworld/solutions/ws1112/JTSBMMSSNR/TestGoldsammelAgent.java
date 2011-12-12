@@ -16,26 +16,29 @@ public class TestGoldsammelAgent {
 	 */
 	public static void main(String[] args) {
 		//SimSystem.getRNGGenerator().setSeed(1233L);
-		int AgentenErgebnis = 0;
-		int BesuchteFelder = 0;
-		int ExpandierteKnoten = 0;
-	    GoldsammelAgent Goldi = new GoldsammelAgent();
-		Goldi.setAgentenVorgehen(AgentenVorgehen.BREITENSUCHE);
-	    try {
-	    	AgentenErgebnis += ExerciseUtils.exerciseOne(Goldi, false, 0L);
-	    	BesuchteFelder += Goldi.getBesuchteFelder();
-	    	ExpandierteKnoten += Goldi.getExpandierteKnoten();
-	    } 
-	    catch (Throwable t) {
-	    	t.printStackTrace();
-	    }
-	    
-	    SimSystem.report(Level.INFO, "Ergebnis des Agenten: " + AgentenErgebnis);
-	    SimSystem.report(Level.INFO, "Besuchte Felder: " + BesuchteFelder);
-	    SimSystem.report(Level.INFO, "Expandierte Knoten: " + ExpandierteKnoten);
+		//for(int i=0; i<10; i++) {
+		SimSystem.consoleOut = false;
+			int AgentenErgebnis = 0;
+			int BesuchteFelder = 0;
+			int ExpandierteKnoten = 0;
+		    GoldsammelAgent Goldi = new GoldsammelAgent();
+			Goldi.setAgentenVorgehen(AgentenVorgehen.ASTERN);
+		    try {
+		    	AgentenErgebnis = ExerciseUtils.exerciseOne(Goldi, false, 0L);
+		    	BesuchteFelder = Goldi.getBesuchteFelder();
+		    	ExpandierteKnoten = Goldi.getExpandierteKnoten();
+		    }
+		    catch (Throwable t) {
+		    	t.printStackTrace();
+		    }
+		    
+		 /*   SimSystem.report(Level.INFO, "Ergebnis des Agenten: " + AgentenErgebnis);
+		    SimSystem.report(Level.INFO, "Besuchte Felder: " + BesuchteFelder);
+		    SimSystem.report(Level.INFO, "Expandierte Knoten: " + ExpandierteKnoten);
+		}*/
 	    BufferedWriter BW=null;
 	    try {
-	    	BW = new BufferedWriter(new FileWriter("../../../../OB_BS_Ergebnis.csv", true));
+	    	BW = new BufferedWriter(new FileWriter("../../../../OB_AS_Ergebnis.csv", true));
 			BW.write(AgentenErgebnis+";"+BesuchteFelder+";"+ExpandierteKnoten);
 			BW.newLine();
 			BW.flush();

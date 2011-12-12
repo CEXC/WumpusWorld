@@ -106,7 +106,8 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 	// finde den kuerzesten Weg zwischen den Punken benutze je nach Einstellung entweder
 	// Breitensuche, uniforme Kostensuche oder A*
 	// Verbesserungs moeglichkeit: Suche den Weg mit den wenigsten Aktionen (Drehungen)
-	protected LinkedList<Wegpunkt> findeWeg(Cave Hoehle, Pair<Integer, Integer> Start, Orientation StartBlickrichtung, Pair<Integer, Integer> Ziel) {
+	protected LinkedList<Wegpunkt> findeWeg(Cave Hoehle, Pair<Integer, Integer> Start, 
+											Orientation StartBlickrichtung, Pair<Integer, Integer> Ziel) {
 		// anlegen der Prioritaetenliste
 		// Dieses wird von der Aufgabenstellung gefordert, ist aber im Sinne der klassischen Implementierungen des
 		// Suchverfahrens Breitensuche nicht korrekt, da die SimpleEventQueue bei Elementen mit gleicher Prioritaet 
@@ -119,6 +120,15 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 		// Start/Ziel als Wegpunkt zum Vergleichen einfacher
 		Wegpunkt Startpunkt = new Wegpunkt(Start, 0, StartBlickrichtung);
 		Wegpunkt Zielpunkt = new Wegpunkt(Ziel, -1);
+		
+		// Einfachster Fall, wird hier schnell abgehandelt:
+		// Start ist Ziel
+		if(Startpunkt.istZiel(Zielpunkt))
+			{
+			LinkedList<Wegpunkt> Weg = new LinkedList<Wegpunkt>();
+			Weg.add(new Wegpunkt(Start, 0));
+			return Weg;
+			}
 		
 		// startpunkt als anfang einfuegen
 		ZuBesuchen.enqueue(Startpunkt, new WegpunktQualitaet(0));
@@ -133,8 +143,6 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 				 LinkedList<Wegpunkt> Weg = new LinkedList<Wegpunkt>();
 				 Weg.addFirst(WP);
 				 Wegpunkt Vorgaenger = WP.getVorgaenger();
-				 if(null == Vorgaenger)
-					 throw new RuntimeException();
 				 while(!Vorgaenger.istZiel(Startpunkt)) {
 					 Weg.addFirst(Vorgaenger);
 					 Vorgaenger = Vorgaenger.getVorgaenger();
