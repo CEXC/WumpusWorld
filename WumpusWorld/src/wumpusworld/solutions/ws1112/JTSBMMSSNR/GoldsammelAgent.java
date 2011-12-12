@@ -6,104 +6,182 @@ import model.wumpusworld.agents.AgentAction;
 import model.wumpusworld.agents.CompleteCavePerceivingAgent;
 import model.wumpusworld.environment.Cave;
 import model.wumpusworld.environment.CompleteCavePerception;
+
 import james.SimSystem;
-import james.core.util.collection.list.LinkedList;
+import james.core.math.random.generators.IRandom;
 import james.core.util.eventset.Entry;
 import james.core.util.eventset.SimpleEventQueue;
 import james.core.util.misc.Pair;
 
 import java.util.ArrayList;
+// Ich musste hier die java.util.LinkedList nehmen,
+// weil die James LinkedList nicht mit verschachtelten LinkedLists
+// z. B. LinkedList<LinkedList<Wegpunkt>> kann. Dort kommt es zu 
+// Verkuerzungen der inneren Liste
+import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
 
 public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 	// Welches Suchverfahren soll eingesetzt werden?
-	AgentenVorgehen AV = AgentenVorgehen.UNIFORMEKOSTENSUCHE; 
+	AgentenVorgehen AV = AgentenVorgehen.ASTERN; 
 		
 	// Informationen zum aktuellen Status des Agenten
 	Integer AktX = -1;
 	Integer AktY = -1; 
 	Orientation Blickrichtung = Orientation.NORTH;
+	int AktGoldklumpenIndex = -1;
 	Integer BesuchteFelder=0;
+	Integer ExpandierteKnoten = 0;
 	
 	// Muessen die Berechnungen bei bekanntwerden der Hoehle noch gemacht werden?
-	// Liste aller Goldklumpen usw. erstellen, Reihenfolge planen
+	// Liste aller Goldklumpen usw. erstellen
 	boolean Initialisiert=false;
-	LinkedList<Pair<Integer, Integer>> AlleGoldklumpen = new LinkedList<Pair<Integer, Integer>>();
-	LinkedList<Pair<Integer, Integer>> ReihenfolgeGoldklumpen = new LinkedList<Pair<Integer,Integer>>();
-	LinkedList<Wegpunkt> WegZumGold = new LinkedList<Wegpunkt>();
+	IRandom ZufallsZahlenGen = null;
+	LinkedList<Pair<Integer, Integer>> RestlicheGoldklumpen = new LinkedList<Pair<Integer, Integer>>();
+	LinkedList<LinkedList<Wegpunkt>> WegeZumGold = new LinkedList<LinkedList<Wegpunkt>>();
+	
 	
 	// speichert alle in der Hoehle vorhandenen Goldklumpen in der ArrayList AlleGoldklumpen
 	protected void erstelleGoldklumpenListe(Cave Hoehle) {
-		AlleGoldklumpen.clear();
+		RestlicheGoldklumpen.clear();
+		WegeZumGold.clear();
 		for(int i=0; i<Hoehle.getWidth(); i++) {
 			for(int j=0; j<Hoehle.getHeight(); j++) {
 				if(Hoehle.getGround(i, j).isFilledWithGold()) {
-					AlleGoldklumpen.add(new Pair<Integer, Integer>(i, j));
+					RestlicheGoldklumpen.add(new Pair<Integer, Integer>(i, j));
 				}
 			}
 		}
 	}
 	
+	// berechne fuer alle Goldklumpen den Weg vom aktuellen Standort aus
+	protected void berechneWegeZumGold(Cave Hoehle) {
+		WegeZumGold.clear();
+		
+		for(int i=0; i<RestlicheGoldklumpen.size(); i++) {
+			LinkedList<Wegpunkt> Weg = new LinkedList<Wegpunkt>();
+			Weg = findeWeg(Hoehle, new Pair<Integer, Integer>(AktX, AktY), Blickrichtung, RestlicheGoldklumpen.get(i));
+			WegeZumGold.addLast(Weg);
+		}
+	}
+	
 	// Heuristik fuer Wegfindung
-	protected Integer RestStreckeLuftLinie(Pair<Integer, Integer> Position, Pair<Integer, Integer> Ziel) {
-		return (int) Math.sqrt((Position.getFirstValue()-Ziel.getFirstValue())*(Position.getFirstValue()-Ziel.getFirstValue())+
+	protected double RestStreckeLuftLinie(Pair<Integer, Integer> Position, Pair<Integer, Integer> Ziel) {
+		return Math.sqrt((Position.getFirstValue()-Ziel.getFirstValue())*(Position.getFirstValue()-Ziel.getFirstValue())+
 			   (Position.getSecondValue()-Ziel.getSecondValue())*(Position.getSecondValue()-Ziel.getSecondValue()));
 	}
 	
-	// finde den kuerzesten Weg zwischen den Punken benutze A* dafuer
+	// Testet ob der angegebene Wegpunkt, in der Liste enthalten ist und niedrigere Kosten hat 
+	// als der in der Liste eingetragene
+	private boolean hatNiedrigereKosten(Wegpunkt WP, List<Wegpunkt> WPL) {
+		// falls der WP doch noch nicht in WPL hat er nat. niedrigere Kosten
+		if(!WPL.contains(WP))
+			return true;
+		// durchlaufe Liste der Wegpunkte
+		for(int i=0; i< WPL.size(); i++) {
+			// Gibt es einen Wegpunkt mit den gleichen Koordinaten und der gleichen Blickrichtung
+			// mit niedrigeren Kosten, hat der uebergebene WP nicht niedrigere Kosten
+			if( (WPL.get(i).equals(WP)) && (WPL.get(i).getKosten() <= WP.getKosten()))
+				return false;
+			}
+		return true;
+	}
+	
+	// finde den kuerzesten Weg zwischen den Punken benutze je nach Einstellung entweder
+	// Breitensuche, uniforme Kostensuche oder A*
 	// Verbesserungs moeglichkeit: Suche den Weg mit den wenigsten Aktionen (Drehungen)
-	protected LinkedList<Wegpunkt> findeWeg(Cave Hoehle, Pair<Integer, Integer> Start, Pair<Integer, Integer> Ziel) {
+	protected LinkedList<Wegpunkt> findeWeg(Cave Hoehle, Pair<Integer, Integer> Start, Orientation StartBlickrichtung, Pair<Integer, Integer> Ziel) {
 		// anlegen der Prioritaetenliste
+		// Dieses wird von der Aufgabenstellung gefordert, ist aber im Sinne der klassischen Implementierungen des
+		// Suchverfahrens Breitensuche nicht korrekt, da die SimpleEventQueue bei Elementen mit gleicher Prioritaet 
+		// nicht als FIFO arbeitet, d.h. dass wir zwar den Baum nach Tiefe geordnet, aber innerhalb einer Tiefe 
+		// "zufaellig" und nicht von links nach rechts abarbeiten. 
+		// Aufgrund der konstanten Kosten von 1, haben wir bei der uniformen Kostensuche das gleiche "Problem".
 		SimpleEventQueue<Wegpunkt, WegpunktQualitaet> ZuBesuchen = new SimpleEventQueue<Wegpunkt, WegpunktQualitaet>();
-		// startpunkt als anfang einfuegen
-		ZuBesuchen.enqueue(new Wegpunkt(Start), new WegpunktQualitaet(RestStreckeLuftLinie(Start, Ziel)));
 		// Liste zum Speichern aller Besuchten Knoten
-		List<Wegpunkt> BesuchteFelder = new ArrayList<Wegpunkt>();
+		ArrayList<Wegpunkt> BesuchteFelder = new ArrayList<Wegpunkt>();
 		// Start/Ziel als Wegpunkt zum Vergleichen einfacher
-		Wegpunkt Startpunkt = new Wegpunkt(Start);
-		Wegpunkt Zielpunkt = new Wegpunkt(Ziel);
+		Wegpunkt Startpunkt = new Wegpunkt(Start, 0, StartBlickrichtung);
+		Wegpunkt Zielpunkt = new Wegpunkt(Ziel, -1);
+		
+		// startpunkt als anfang einfuegen
+		ZuBesuchen.enqueue(Startpunkt, new WegpunktQualitaet(0));
 		// Solange wir noch nicht das Ziel erreicht haben, behandeln wir ggf. den naechsten Knoten
 		while(!ZuBesuchen.isEmpty()) {
 			// Naechsten Punkt aus der Schlange holen
 			Entry<Wegpunkt, WegpunktQualitaet> tmp = ZuBesuchen.dequeue();
-			Wegpunkt WP= tmp.getEvent();
+			Wegpunkt WP=tmp.getEvent();
 			// Ist der Wegpunkt das Ziel?
-			if(WP.equals(Zielpunkt)) {
+			if(WP.istZiel(Zielpunkt)) {
 				 // Bestimme den gefundenen Weg
 				 LinkedList<Wegpunkt> Weg = new LinkedList<Wegpunkt>();
 				 Weg.addFirst(WP);
 				 Wegpunkt Vorgaenger = WP.getVorgaenger();
-				 while(!Vorgaenger.equals(Startpunkt)) {
+				 while(!Vorgaenger.istZiel(Startpunkt)) {
 					 Weg.addFirst(Vorgaenger);
 					 Vorgaenger = Vorgaenger.getVorgaenger();
 				 }
 				 return Weg;
 			}
 			// Falls der Wegpunkt schon in der Liste der besuchten Felder enthalten ist, verwerfen
-			if(BesuchteFelder.contains(WP))
+			// falls dieses Mal keine niedirgeren Kosten
+			if(BesuchteFelder.contains(WP) && !hatNiedrigereKosten(WP, BesuchteFelder))
 				continue;
+			// Den vorhandenen Knoten rausschmeissen, wir brauchen ja keinen unnuetzen Ballast
+			else if(BesuchteFelder.contains(WP) && hatNiedrigereKosten(WP, BesuchteFelder))
+				BesuchteFelder.remove(WP);
+			
 			// Wegpunkt in die Liste der Besuchten Felder eintragen
 			BesuchteFelder.add(WP);
+			
+			// JOHN:
+			// Wann ist ein Knoten expandiert? IMHO genau dann, wenn wir seine Nachfolger durchgehen
+			// Ist dies richtig?
+			ExpandierteKnoten++;
+			
 			// Nachfolger bestimmen
 			List<Pair<Integer, Integer>> NachfolgerListe = Hoehle.getVonNeumannNeighbourhoodCoordinates(
 															WP.getKoordinaten().getFirstValue(), 
 															WP.getKoordinaten().getSecondValue());
 			// Alle Nachfolger, die noch nicht besucht wurden, in Schlange haengen
 			for(int i=0; i<NachfolgerListe.size(); i++) {
-				Wegpunkt Nachfolger  = new Wegpunkt(NachfolgerListe.get(i), WP);
-				// Schon besucht? bei A* brauchen wir den nicht wieder einfuegen
-				if(BesuchteFelder.contains(Nachfolger))
-					continue;
+				Wegpunkt Nachfolger  = new Wegpunkt(NachfolgerListe.get(i), WP, WP.Kosten+1);
 				// wenn Feld nicht betretbar ist, brauchen wir es auch nicht
 				if(!IstFeldBetretbar(Hoehle, Nachfolger.getKoordinaten()))
 					continue;
+				
+				// Schon besucht? dieses mal hoehere Kosten? -> Knoten verwerfen
+				if(BesuchteFelder.contains(Nachfolger) && !hatNiedrigereKosten(Nachfolger, BesuchteFelder))
+					continue;
+				
+				// Welche Blickrichtung haben wir beim Nachfolger?
+				
 				// Anhaengen an Queue
-				ZuBesuchen.enqueue(Nachfolger, 
-						new WegpunktQualitaet(RestStreckeLuftLinie(Nachfolger.getKoordinaten(), Ziel)));
+				ZuBesuchen.enqueue(Nachfolger, getWegpunktQualitaet(Nachfolger, Ziel));
 			}
 		}
 		return null;
+	}
+	
+	protected WegpunktQualitaet getWegpunktQualitaet(Wegpunkt WP, Pair<Integer, Integer> Ziel) {
+		switch(AV) {
+			case BREITENSUCHE: {
+				// hier spiegelt getKosten einfach nur die Tiefe im Suchbaum wieder und hat nichts mit den
+				// Kosten fuer den naechsten Schritt zu tun
+				return new WegpunktQualitaet(WP.getKosten());
+			}
+			case UNIFORMEKOSTENSUCHE: {
+				// hier spiegelt getKosten die Kosten bis zum Erreichen des Knotens wieder
+				return new WegpunktQualitaet(WP.getKosten());	
+			}
+			case ASTERN: {
+				return new WegpunktQualitaet(WP.getKosten(), RestStreckeLuftLinie(WP.getKoordinaten(), Ziel), 0);
+			}
+			default: {
+				return null;
+			}
+		}
+				
 	}
 	
 	protected boolean IstFeldBetretbar(Cave Hoehle, Pair<Integer, Integer> Koordinaten) {
@@ -112,27 +190,32 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 		return true;
 	}
 	
-	// Diese Methode plant die Reihenfolge in der die Goldstuecke aufgesammelt werden sollen.
-	// Sie sucht also nach dem kuerzesten Weg innerhalb der Hoehle, welcher alle Goldstuecke
-	// enthaelt
-	protected void planeGoldsammelReihenfolge() {
-		ReihenfolgeGoldklumpen = AlleGoldklumpen;
+	protected Integer getAnzahlAktionen(Pair<Integer, Integer> Start, Orientation Startblickrichtung,
+										Pair<Integer, Integer> Ziel) {
+		return 0;
 	}
 	
+	// die methode ist nur fuer benachbarte Felder gedacht
+	protected Orientation getZielrichtung(Pair<Integer, Integer> Position, Pair<Integer, Integer> Ziel) {
+		Integer PosX = Position.getFirstValue();
+		Integer PosY = Position.getSecondValue();
+		Integer X = Ziel.getFirstValue();
+		Integer Y = Ziel.getSecondValue();
+		Orientation Zielrichtung = Orientation.NORTH;
+		// In welcher Richtung liegt das naechste Ziel
+		if(X > PosX) Zielrichtung = Orientation.EAST;
+		else if(X < PosX) Zielrichtung = Orientation.WEST;
+		else if(Y > PosY) Zielrichtung = Orientation.NORTH;
+		else if(Y < PosY) Zielrichtung = Orientation.SOUTH;
+		return Zielrichtung;
+	}
 	// bewege den Agenten zu Koordinaten. Drehe ihn in die richtige Richtung und veranlasse Schritt
 	protected AgentAction bewegeAgentNach(Pair<Integer, Integer> Koordinaten) {
-		Orientation Zielrichtung=Orientation.NORTH;
-		Integer X = Koordinaten.getFirstValue();
-		Integer Y = Koordinaten.getSecondValue();
-		// In welcher Richtung liegt das naechste Ziel
-		if(X > AktX) Zielrichtung = Orientation.EAST;
-		else if(X < AktX) Zielrichtung = Orientation.WEST;
-		else if(Y > AktY) Zielrichtung = Orientation.NORTH;
-		else if(Y < AktY) Zielrichtung = Orientation.SOUTH;
-		// Wir muessen auf dem Feld sein, mache nichts
-		else
+		// Sind wir auf dem Feld?
+		if( (Koordinaten.getFirstValue() == AktX) && ((Koordinaten.getSecondValue() == AktY)) )
 			return AgentAction.WAIT;
 		
+		Orientation Zielrichtung=getZielrichtung(new Pair<Integer, Integer>(AktX, AktY), Koordinaten);
 		// Gucken wir in Richtung des naechsten Feldes? -> Laufen
 		if(Blickrichtung == Zielrichtung) {
 			BesuchteFelder++;
@@ -161,56 +244,63 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 		AktX = Wahrnehmung.getXPosition();
 		AktY = Wahrnehmung.getYPosition();
 		if(!Initialisiert) {
+			ZufallsZahlenGen = SimSystem.getRNGGenerator().getNextRNG();
 			// Fuege alle Goldklumpenpositionen zur Goldklumpen Liste hinzu
 			erstelleGoldklumpenListe(Wahrnehmung.getCave());
-			
-			// Gibt es Gold? sonst brauchen wir gar nichts machen
-			if(!AlleGoldklumpen.isEmpty()) {
-				// Hier wird die eigentliche Suche nach dem Weg ausgefuehrt
-				planeGoldsammelReihenfolge();
-				// das erste Goldstueck anpeilen
-				WegZumGold = findeWeg(Wahrnehmung.getCave(),
-						new Pair<Integer, Integer>(AktX, AktY),
-						ReihenfolgeGoldklumpen.getFirst());
-			}
 			Initialisiert = true;
 		}
 		// Ist noch Gold vorhanden, falls nicht, einfach warten
-		if(ReihenfolgeGoldklumpen.isEmpty()) {
+		if(RestlicheGoldklumpen.isEmpty()) {
 			return AgentAction.WAIT;
 		}
 		
+		// Brauchen wir einen neuen Goldklumpen als Ziel
+		if(AktGoldklumpenIndex == -1)
+			{
+			// berechne Wege zu allen Goldklumpen
+			berechneWegeZumGold(Wahrnehmung.getCave());
+			// Waehle zufaellig einen davon aus
+			AktGoldklumpenIndex = ZufallsZahlenGen.nextInt(RestlicheGoldklumpen.size());
+			}
+		
 		// Wir sind auf dem Weg zum naechsten Goldklumpen.
 		// Sind wir auf dem aktuellen Wegpunkt?
-		if(!WegZumGold.isEmpty() && (WegZumGold.getFirst().getKoordinaten().getFirstValue() == AktX) && 
-				(WegZumGold.getFirst().getKoordinaten().getSecondValue() == AktY)) 
-			WegZumGold.removeFirst();
+		if((WegeZumGold.get(AktGoldklumpenIndex).getFirst().getKoordinaten().getFirstValue() == AktX) && 
+				(WegeZumGold.get(AktGoldklumpenIndex).getFirst().getKoordinaten().getSecondValue() == AktY)) 
+			WegeZumGold.get(AktGoldklumpenIndex).removeFirst();
 		
 		// Ist die Liste nicht leer, muessen wir uns weiterbewegen,
 		// ansonsten brauchen wir hier nichts zu tun, sondern lassen 
 		// ggf. das Gold aufheben
-		if(!WegZumGold.isEmpty()) 
-			return bewegeAgentNach(WegZumGold.getFirst().getKoordinaten());
+		if(!WegeZumGold.get(AktGoldklumpenIndex).isEmpty()) 
+			return bewegeAgentNach(WegeZumGold.get(AktGoldklumpenIndex).getFirst().getKoordinaten());
 		
 		// sind wir an der Position des aktuellen Goldklumpens
-		if(!ReihenfolgeGoldklumpen.isEmpty() &&
-				(ReihenfolgeGoldklumpen.getFirst().getFirstValue() == AktX) && 
-				(ReihenfolgeGoldklumpen.getFirst().getSecondValue() == AktY)) {
-			ReihenfolgeGoldklumpen.removeFirst();
-			// gibt es noch mehr Gold?
-			if(!ReihenfolgeGoldklumpen.isEmpty()) {
-				WegZumGold = findeWeg(Wahrnehmung.getCave(), 
-						new Pair<Integer, Integer>(Wahrnehmung.getXPosition(), Wahrnehmung.getYPosition()),
-						ReihenfolgeGoldklumpen.getFirst());
-			}
+		if((RestlicheGoldklumpen.get(AktGoldklumpenIndex).getFirstValue() == AktX) && 
+				(RestlicheGoldklumpen.get(AktGoldklumpenIndex).getSecondValue() == AktY)) {
+			RestlicheGoldklumpen.remove(AktGoldklumpenIndex);
+			AktGoldklumpenIndex = -1;
 			return AgentAction.GRAB_GOLD;
 		}
-		return AgentAction.WAIT;
+		// Hier kommen wir wohl eher nicht hin...visualisieren uns diesen Fall aber
+		// trotzdem, indem der Agent sich immer im Kreis dreht
+		return AgentAction.TURN_RIGHT;
 	}
 
 	public Integer getBesuchteFelder() {
 		return BesuchteFelder;
 	}
+	
+	public Integer getExpandierteKnoten() {
+		return ExpandierteKnoten;
+		}
+	
+	public AgentenVorgehen getAgentenVorgehen() {
+		return AV;
+		}
+	public void setAgentenVorgehen(AgentenVorgehen AV) {
+		this.AV = AV;
+		}
 	@Override
 	public String getName() {
 		return "Goldsammel Agent";
