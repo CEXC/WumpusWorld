@@ -15,7 +15,7 @@ public class TestGoldsammelAgent {
 		SimSystem.getRNGGenerator().setSeed(1233L);
 		int AgentenErgebnis = -1;
 	    try {
-	    	ExerciseUtils.exerciseOne(new GoldsammelAgent(), true, 100L);
+	    	AgentenErgebnis = ExerciseUtils.exerciseOne(new GoldsammelAgent(), true, 100L);
 	    } 
 	    catch (Throwable t) {
 	    	t.printStackTrace();
