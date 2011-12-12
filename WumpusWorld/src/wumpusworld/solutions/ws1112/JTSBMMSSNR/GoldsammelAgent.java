@@ -13,6 +13,9 @@ import james.core.util.eventset.Entry;
 import james.core.util.eventset.SimpleEventQueue;
 import james.core.util.misc.Pair;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 // Ich musste hier die java.util.LinkedList nehmen,
 // weil die James LinkedList nicht mit verschachtelten LinkedLists
@@ -97,7 +100,12 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 		for(int i=0; i< WPL.size(); i++) {
 			// Gibt es einen Wegpunkt mit den gleichen Koordinaten und der gleichen Blickrichtung
 			// mit niedrigeren Kosten, hat der uebergebene WP nicht niedrigere Kosten
-			if( (WPL.get(i).equals(WP)) && (WPL.get(i).getKosten() <= WP.getKosten()))
+			if( (WPL.get(i).equals(WP)) && (WPL.get(i).getKosten() < WP.getKosten()))
+				return false;
+			// Falls die Kosten gleich sind, entscheidet bei ASTERNSPEZIAL die Anzahl der Aktionen
+			// Bei allen anderen sind die Aktionen = 0 also hier immer false
+			if((WPL.get(i).equals(WP)) && (WPL.get(i).getKosten() == WP.getKosten()) &&
+					(WPL.get(i).getAktionen() <= WP.getAktionen()))
 				return false;
 			}
 		return true;
@@ -118,7 +126,7 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 		// Liste zum Speichern aller Besuchten Knoten
 		ArrayList<Wegpunkt> BesuchteFelder = new ArrayList<Wegpunkt>();
 		// Start/Ziel als Wegpunkt zum Vergleichen einfacher
-		Wegpunkt Startpunkt = new Wegpunkt(Start, 0, StartBlickrichtung);
+		Wegpunkt Startpunkt = new Wegpunkt(Start, 0, StartBlickrichtung, 0);
 		Wegpunkt Zielpunkt = new Wegpunkt(Ziel, -1);
 		
 		// Einfachster Fall, wird hier schnell abgehandelt:
@@ -171,7 +179,7 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 															WP.getKoordinaten().getSecondValue());
 			// Alle Nachfolger, die noch nicht besucht wurden, in Schlange haengen
 			for(int i=0; i<NachfolgerListe.size(); i++) {
-				Wegpunkt Nachfolger  = new Wegpunkt(NachfolgerListe.get(i), WP, WP.Kosten+1);
+				Wegpunkt Nachfolger = new Wegpunkt(NachfolgerListe.get(i), WP, WP.Kosten+1);
 				// wenn Feld nicht betretbar ist, brauchen wir es auch nicht
 				if(!IstFeldBetretbar(Hoehle, Nachfolger.getKoordinaten()))
 					continue;
@@ -181,15 +189,20 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 					continue;
 				
 				// Welche Blickrichtung haben wir beim Nachfolger?
-				
+				Orientation NeueBlickrichtung = getZielrichtung(WP.getKoordinaten(), Nachfolger.getKoordinaten());
+				// Dies ist nur fuer ASTERNSPEZIAL notwendig, ansonsten setzen wir es auf StartBlickrichtung
+				Nachfolger.setBlickrichtung( (AV==AgentenVorgehen.ASTERNSPEZIAL) ? NeueBlickrichtung : StartBlickrichtung);
+				// Wie viele Aktionen werden benoetigt
+				Integer AnzahlAktionen = getAnzahlAktionen(WP, Nachfolger)+WP.getAktionen();
+				Nachfolger.setAktionen(AnzahlAktionen);
 				// Anhaengen an Queue
-				ZuBesuchen.enqueue(Nachfolger, getWegpunktQualitaet(Nachfolger, Ziel));
+				ZuBesuchen.enqueue(Nachfolger, getWegpunktQualitaet(Nachfolger, Ziel, AnzahlAktionen));
 			}
 		}
 		return null;
 	}
 	
-	protected WegpunktQualitaet getWegpunktQualitaet(Wegpunkt WP, Pair<Integer, Integer> Ziel) {
+	protected WegpunktQualitaet getWegpunktQualitaet(Wegpunkt WP, Pair<Integer, Integer> Ziel, Integer AnzahlAktionen) {
 		switch(AV) {
 			case BREITENSUCHE: {
 				// hier spiegelt getKosten einfach nur die Tiefe im Suchbaum wieder und hat nichts mit den
@@ -204,7 +217,8 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 				return new WegpunktQualitaet(WP.getKosten(), RestStreckeLuftLinie(WP.getKoordinaten(), Ziel), 0);
 			}
 			case ASTERNSPEZIAL: {
-				return new WegpunktQualitaet(WP.getKosten(), RestStreckeLuftLinie(WP.getKoordinaten(), Ziel), 0);
+				return new WegpunktQualitaet(WP.getKosten(), RestStreckeLuftLinie(WP.getKoordinaten(), Ziel), 
+												AnzahlAktionen);
 			}
 			default: {
 				return null;
@@ -219,8 +233,33 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 		return true;
 	}
 	
-	protected Integer getAnzahlAktionen(Pair<Integer, Integer> Start, Orientation Startblickrichtung,
-										Pair<Integer, Integer> Ziel) {
+	// Nur implementiert fuer ASTERNSPEZIAL
+	protected Integer getAnzahlAktionen(Wegpunkt Start, Wegpunkt Ziel) {
+		if(AV != AgentenVorgehen.ASTERNSPEZIAL)
+			return 0;
+		// Ist Start = Ziel?
+		if(Start.istZiel(Ziel))
+			return 0;
+		
+		// Gucken wir in Richtung des naechsten Feldes? nur Laufen
+		if(Start.getBlickrichtung() == Ziel.getBlickrichtung())
+			return 1;
+		
+		// Wie viele Schritte muessen wir drehen und wie viele Aktionen haben wir dann insgesamt?
+		if( (Start.getBlickrichtung() == Orientation.NORTH) ||
+				(Start.getBlickrichtung() == Orientation.SOUTH) ) {
+			if( (Ziel.getBlickrichtung() == Orientation.EAST) || (Ziel.getBlickrichtung() == Orientation.WEST) )
+				return 2;
+			else
+				return 3;
+		}
+		if( (Start.getBlickrichtung() == Orientation.EAST) ||
+				(Start.getBlickrichtung() == Orientation.WEST) ) {
+			if( (Ziel.getBlickrichtung() == Orientation.NORTH) || (Ziel.getBlickrichtung() == Orientation.SOUTH) )
+				return 2;
+			else
+				return 3;
+		}
 		return 0;
 	}
 	
@@ -318,8 +357,7 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 		}
 		// Hier kommen wir wohl eher nicht hin...visualisieren uns diesen Fall aber
 		// trotzdem, indem der Agent sich immer im Kreis dreht
-		throw new RuntimeException(); 
-		//return AgentAction.TURN_RIGHT;
+		return AgentAction.TURN_RIGHT;
 	}
 
 	public int getBesuchteFelder() {

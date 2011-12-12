@@ -8,37 +8,43 @@ public class Wegpunkt {
 	Wegpunkt Vorgaenger;
 	Orientation Blickrichtung;
 	Integer Kosten;
+	Integer Aktionen;
 	
 	public Wegpunkt() {
 		Koordinaten = new Pair<Integer, Integer>(-1,-1);
 		Blickrichtung = Orientation.NORTH;
 		Vorgaenger = null;
 		Kosten = 0;
+		Aktionen = 0;
 	}
 	public Wegpunkt(Wegpunkt WP) {
 		this.Koordinaten = WP.Koordinaten;
 		this.Vorgaenger = WP.Vorgaenger;
 		this.Blickrichtung = WP.Blickrichtung;
 		this.Kosten = WP.Kosten;
+		this.Aktionen = WP.Aktionen;
 	}
 	public Wegpunkt(Pair<Integer, Integer> Koordinaten, Integer Kosten) {
 		this.Koordinaten = Koordinaten;
 		this.Kosten = Kosten;
 	}
-	public Wegpunkt(Pair<Integer, Integer> Koordinaten, Integer Kosten, Orientation Blickrichtung) {
+	public Wegpunkt(Pair<Integer, Integer> Koordinaten, Integer Kosten, Orientation Blickrichtung, Integer Aktionen) {
 		this.Koordinaten = Koordinaten;
 		this.Kosten = Kosten;
 		this.Blickrichtung = Blickrichtung;
+		this.Aktionen = Aktionen;
 	}
 	public Wegpunkt(Pair<Integer, Integer> Koordinaten, Wegpunkt Vorgaenger, Integer Kosten) {
 		this.Koordinaten = Koordinaten;
 		this.Kosten = Kosten;
 		this.Vorgaenger = Vorgaenger;
 	}
-	public Wegpunkt(Pair<Integer, Integer> Koordinaten, Wegpunkt Vorgaenger, Integer Kosten, Orientation Blickrichtung) {
+	public Wegpunkt(Pair<Integer, Integer> Koordinaten, Wegpunkt Vorgaenger, Integer Kosten, Orientation Blickrichtung,
+			Integer Aktionen) {
 		this.Koordinaten = Koordinaten;
 		this.Kosten = Kosten;
 		this.Vorgaenger = Vorgaenger;
+		this.Aktionen = Aktionen;
 		this.Blickrichtung = Blickrichtung;
 	}
 	
@@ -66,6 +72,12 @@ public class Wegpunkt {
 	public void setKosten(Integer Kosten) {
 		this.Kosten = Kosten;
 	}
+	public Integer getAktionen() {
+		return Aktionen;
+	}
+	public void setAktionen(Integer Aktionen) {
+		this.Aktionen = Aktionen;
+	}
 	// test ob zielpunkt, dabei spielen nur Koordinaten eine Rolle
 	public boolean istZiel(Wegpunkt Ziel) {
 		if(Koordinaten.getFirstValue()!=Ziel.getKoordinaten().getFirstValue()) 
@@ -88,8 +100,8 @@ public class Wegpunkt {
 			return false;
 		if(Koordinaten.getSecondValue()!=WP.getKoordinaten().getSecondValue())
 			return false;
-		/*if(Blickrichtung != WP.Blickrichtung)
-			return false;*/
+		if(Blickrichtung != WP.Blickrichtung)
+			return false;
 		return true;
 	}
 }

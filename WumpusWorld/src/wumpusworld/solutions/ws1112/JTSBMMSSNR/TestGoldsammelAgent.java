@@ -15,41 +15,27 @@ public class TestGoldsammelAgent {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//SimSystem.getRNGGenerator().setSeed(1233L);
-		//for(int i=0; i<10; i++) {
-		SimSystem.consoleOut = false;
-			int AgentenErgebnis = 0;
-			int BesuchteFelder = 0;
-			int ExpandierteKnoten = 0;
-		    GoldsammelAgent Goldi = new GoldsammelAgent();
-			Goldi.setAgentenVorgehen(AgentenVorgehen.ASTERN);
-		    try {
-		    	AgentenErgebnis = ExerciseUtils.exerciseOne(Goldi, false, 0L);
-		    	BesuchteFelder = Goldi.getBesuchteFelder();
-		    	ExpandierteKnoten = Goldi.getExpandierteKnoten();
-		    }
-		    catch (Throwable t) {
-		    	t.printStackTrace();
-		    }
-		    
-		 /*   SimSystem.report(Level.INFO, "Ergebnis des Agenten: " + AgentenErgebnis);
-		    SimSystem.report(Level.INFO, "Besuchte Felder: " + BesuchteFelder);
-		    SimSystem.report(Level.INFO, "Expandierte Knoten: " + ExpandierteKnoten);
-		}*/
-	    BufferedWriter BW=null;
+		SimSystem.getRNGGenerator().setSeed(1233L);
+		
+		SimSystem.consoleOut = true;
+		int AgentenErgebnis = 0;
+		int BesuchteFelder = 0;
+		int ExpandierteKnoten = 0;
+	    GoldsammelAgent Goldi = new GoldsammelAgent();
+		Goldi.setAgentenVorgehen(AgentenVorgehen.ASTERNSPEZIAL);
 	    try {
-	    	BW = new BufferedWriter(new FileWriter("../../../../OB_AS_Ergebnis.csv", true));
-			BW.write(AgentenErgebnis+";"+BesuchteFelder+";"+ExpandierteKnoten);
-			BW.newLine();
-			BW.flush();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-	    } finally {                       // always close the file
-	    	if (BW != null) try {
-	    		BW.close();
-	    	} catch (IOException ioe2) {
-	    	}
+	    	AgentenErgebnis = ExerciseUtils.exerciseOne(Goldi, false, 0L);
+	    	BesuchteFelder = Goldi.getBesuchteFelder();
+	    	ExpandierteKnoten = Goldi.getExpandierteKnoten();
 	    }
+	    catch (Throwable t) {
+	    	t.printStackTrace();
+	    }
+	    
+	    SimSystem.report(Level.INFO, "Ergebnis des Agenten: " + AgentenErgebnis);
+	    SimSystem.report(Level.INFO, "Besuchte Felder: " + BesuchteFelder);
+	    SimSystem.report(Level.INFO, "Expandierte Knoten: " + ExpandierteKnoten);
+		
 	    System.exit(0);
     }
 }
