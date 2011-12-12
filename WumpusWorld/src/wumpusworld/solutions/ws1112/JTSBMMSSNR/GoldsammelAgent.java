@@ -30,8 +30,8 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 	Integer AktY = -1; 
 	Orientation Blickrichtung = Orientation.NORTH;
 	int AktGoldklumpenIndex = -1;
-	Integer BesuchteFelder=0;
-	Integer ExpandierteKnoten = 0;
+	int BesuchteFelder=0;
+	int ExpandierteKnoten = 0;
 	
 	// Muessen die Berechnungen bei bekanntwerden der Hoehle noch gemacht werden?
 	// Liste aller Goldklumpen usw. erstellen
@@ -39,7 +39,7 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 	IRandom ZufallsZahlenGen = null;
 	LinkedList<Pair<Integer, Integer>> RestlicheGoldklumpen = new LinkedList<Pair<Integer, Integer>>();
 	LinkedList<LinkedList<Wegpunkt>> WegeZumGold = new LinkedList<LinkedList<Wegpunkt>>();
-	
+	//LinkedList<Wegpunkt> WegZumGold = new LinkedList<Wegpunkt>();
 	
 	// speichert alle in der Hoehle vorhandenen Goldklumpen in der ArrayList AlleGoldklumpen
 	protected void erstelleGoldklumpenListe(Cave Hoehle) {
@@ -57,12 +57,28 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 	// berechne fuer alle Goldklumpen den Weg vom aktuellen Standort aus
 	protected void berechneWegeZumGold(Cave Hoehle) {
 		WegeZumGold.clear();
-		
+		boolean UnerreichbareGoldklumpen=false;
 		for(int i=0; i<RestlicheGoldklumpen.size(); i++) {
 			LinkedList<Wegpunkt> Weg = new LinkedList<Wegpunkt>();
 			Weg = findeWeg(Hoehle, new Pair<Integer, Integer>(AktX, AktY), Blickrichtung, RestlicheGoldklumpen.get(i));
+			// Es gibt keinen Weg zu diesem Goldklumpen
+			if(null == Weg)
+				UnerreichbareGoldklumpen=true;
 			WegeZumGold.addLast(Weg);
 		}
+		// Es gibt vllt. Goldklumpen, zu denen es keinen Weg gibt, entferne diese Goldklumpen aus der Liste
+		while(UnerreichbareGoldklumpen && loescheUnereichbareGoldklumpen()) ;
+	}
+	
+	protected boolean loescheUnereichbareGoldklumpen() {
+		for(int i=0; i<RestlicheGoldklumpen.size(); i++) {
+			if(null == WegeZumGold.get(i)) {
+				WegeZumGold.remove(i);
+				RestlicheGoldklumpen.remove(i);
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	// Heuristik fuer Wegfindung
@@ -117,6 +133,8 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 				 LinkedList<Wegpunkt> Weg = new LinkedList<Wegpunkt>();
 				 Weg.addFirst(WP);
 				 Wegpunkt Vorgaenger = WP.getVorgaenger();
+				 if(null == Vorgaenger)
+					 throw new RuntimeException();
 				 while(!Vorgaenger.istZiel(Startpunkt)) {
 					 Weg.addFirst(Vorgaenger);
 					 Vorgaenger = Vorgaenger.getVorgaenger();
@@ -175,6 +193,9 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 				return new WegpunktQualitaet(WP.getKosten());	
 			}
 			case ASTERN: {
+				return new WegpunktQualitaet(WP.getKosten(), RestStreckeLuftLinie(WP.getKoordinaten(), Ziel), 0);
+			}
+			case ASTERNSPEZIAL: {
 				return new WegpunktQualitaet(WP.getKosten(), RestStreckeLuftLinie(WP.getKoordinaten(), Ziel), 0);
 			}
 			default: {
@@ -259,13 +280,18 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 			{
 			// berechne Wege zu allen Goldklumpen
 			berechneWegeZumGold(Wahrnehmung.getCave());
+			// Es koennten unerreichbare Goldklumpen rausgeflogen sein
+			if(RestlicheGoldklumpen.isEmpty()) {
+				return AgentAction.WAIT;
+			}
 			// Waehle zufaellig einen davon aus
 			AktGoldklumpenIndex = ZufallsZahlenGen.nextInt(RestlicheGoldklumpen.size());
 			}
 		
 		// Wir sind auf dem Weg zum naechsten Goldklumpen.
 		// Sind wir auf dem aktuellen Wegpunkt?
-		if((WegeZumGold.get(AktGoldklumpenIndex).getFirst().getKoordinaten().getFirstValue() == AktX) && 
+		if(//!WegeZumGold.isEmpty() && WegeZumGold.size() > AktGoldklumpenIndex &&
+				(WegeZumGold.get(AktGoldklumpenIndex).getFirst().getKoordinaten().getFirstValue() == AktX) && 
 				(WegeZumGold.get(AktGoldklumpenIndex).getFirst().getKoordinaten().getSecondValue() == AktY)) 
 			WegeZumGold.get(AktGoldklumpenIndex).removeFirst();
 		
@@ -284,14 +310,15 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 		}
 		// Hier kommen wir wohl eher nicht hin...visualisieren uns diesen Fall aber
 		// trotzdem, indem der Agent sich immer im Kreis dreht
-		return AgentAction.TURN_RIGHT;
+		throw new RuntimeException(); 
+		//return AgentAction.TURN_RIGHT;
 	}
 
-	public Integer getBesuchteFelder() {
+	public int getBesuchteFelder() {
 		return BesuchteFelder;
 	}
 	
-	public Integer getExpandierteKnoten() {
+	public int getExpandierteKnoten() {
 		return ExpandierteKnoten;
 		}
 	
@@ -303,7 +330,7 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 		}
 	@Override
 	public String getName() {
-		return "Goldsammel Agent";
+		return "Goldsammler";
 	}
 
 }

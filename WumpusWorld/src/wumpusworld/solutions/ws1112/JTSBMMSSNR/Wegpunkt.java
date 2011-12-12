@@ -88,7 +88,7 @@ public class Wegpunkt {
 			return false;
 		if(Koordinaten.getSecondValue()!=WP.getKoordinaten().getSecondValue())
 			return false;
-	/*	if(Blickrichtung != WP.Blickrichtung)
+		/*if(Blickrichtung != WP.Blickrichtung)
 			return false;*/
 		return true;
 	}
