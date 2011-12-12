@@ -10,6 +10,8 @@ public class WegMitLaenge {
 		this.Ziel=Ziel;
 		this.Laenge=Laenge;
 	}
+	// Wege sind gleich, solange sie die gleichen Endpunkte haben,
+	// egal aus welcher Richtung man sie beschreitet
 	public boolean equals(Object Objekt) {
 		if (this == Objekt) {
 			return true;
@@ -19,7 +21,8 @@ public class WegMitLaenge {
 			}
 		final WegMitLaenge Weg = (WegMitLaenge) Objekt;
 		
-		if(Start == Weg.Start && Ziel==Weg.Ziel)
+		if( (Start == Weg.Start && Ziel==Weg.Ziel) || 
+				((Start == Weg.Ziel && Ziel==Weg.Start)) )
 			return true;
 		return false;
 	}
