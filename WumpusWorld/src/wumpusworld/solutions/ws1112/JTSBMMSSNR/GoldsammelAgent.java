@@ -13,9 +13,6 @@ import james.core.util.eventset.Entry;
 import james.core.util.eventset.SimpleEventQueue;
 import james.core.util.misc.Pair;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 // Ich musste hier die java.util.LinkedList nehmen,
 // weil die James LinkedList nicht mit verschachtelten LinkedLists
@@ -134,7 +131,6 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 		if(Startpunkt.istZiel(Zielpunkt))
 			{
 			LinkedList<Wegpunkt> Weg = new LinkedList<Wegpunkt>();
-			Weg.add(new Wegpunkt(Start, 0));
 			return Weg;
 			}
 		
@@ -306,6 +302,24 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 		return Aktion;
 	}
 	
+	private int getNahestenGoldklumpen() {
+		// Fehler keine Goldklumpen oder keine Wege
+		if(RestlicheGoldklumpen.isEmpty() || WegeZumGold.isEmpty())
+			return -1;
+		// alle Wege durchlaufen, Index und Laenge des Kuerzesten merken
+		// So lang kann kein Weg sein
+		int MinLaenge = 999999999;
+		// und einen Index von -1 gibt es auch nicht
+		int Index = -1;
+		for(int i=0; i<WegeZumGold.size(); i++) {
+			if(WegeZumGold.get(i).size() < MinLaenge) {
+				MinLaenge= WegeZumGold.get(i).size();
+				Index = i;
+			}
+		}
+		return Index;
+	}
+	
 	@Override
 	protected AgentAction act(CompleteCavePerception Wahrnehmung) {
 		// Update des aktuellen Status
@@ -331,8 +345,8 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 			if(RestlicheGoldklumpen.isEmpty()) {
 				return AgentAction.WAIT;
 			}
-			// Waehle zufaellig einen davon aus
-			AktGoldklumpenIndex = ZufallsZahlenGen.nextInt(RestlicheGoldklumpen.size());
+			// Waehle den nahesten Goldklumpen aus
+			AktGoldklumpenIndex = getNahestenGoldklumpen();
 			}
 		
 		// Wir sind auf dem Weg zum naechsten Goldklumpen.
