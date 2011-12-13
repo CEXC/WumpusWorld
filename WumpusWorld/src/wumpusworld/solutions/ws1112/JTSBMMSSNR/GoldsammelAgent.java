@@ -294,11 +294,11 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 			((Orientation.EAST == Blickrichtung) && (Orientation.NORTH == Zielrichtung)) )
 			Aktion = AgentAction.TURN_LEFT;
 	
-		// Update des aktuellen Status
+		/*// Update des aktuellen Status
 		if(AgentAction.TURN_RIGHT == Aktion)
 			Blickrichtung = Blickrichtung.turnRight();
 		else if(AgentAction.TURN_LEFT == Aktion)
-			Blickrichtung = Blickrichtung.turnLeft();
+			Blickrichtung = Blickrichtung.turnLeft();*/
 		return Aktion;
 	}
 	
@@ -325,6 +325,7 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 		// Update des aktuellen Status
 		AktX = Wahrnehmung.getXPosition();
 		AktY = Wahrnehmung.getYPosition();
+		Blickrichtung = getCavePosition().getOrientation();
 		if(!Initialisiert) {
 			ZufallsZahlenGen = SimSystem.getRNGGenerator().getNextRNG();
 			// Fuege alle Goldklumpenpositionen zur Goldklumpen Liste hinzu
