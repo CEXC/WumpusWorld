@@ -5,7 +5,10 @@ import james.SimSystem;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
+
+import model.wumpusworld.agents.AgentAction;
 
 import examples.wumpusworld.exercises.ExerciseUtils;
 
@@ -44,10 +47,56 @@ public class TestRegelAgent {
 	    int GesamtErgebnis = 0;
 	    int GesamtBesuchteFelder = 0;
 	    
+	    ArrayList<Regel> Regeln = new ArrayList<Regel>();
+	    
+	    Regel R = new Regel();
+	    R.addAktion(AgentAction.TURN_LEFT);
+	    R.addAktion(AgentAction.GO);   
+	    R.setPrioritaet(10);
+	    Regeln.add(new Regel(R));
+	    
+	    R.addAktion(AgentAction.TURN_RIGHT);
+	    R.addAktion(AgentAction.GO);   
+	    R.setPrioritaet(60);
+	    Regeln.add(new Regel(R));
+	    
+	    R.addAktion(AgentAction.TURN_LEFT);
+	    R.addAktion(AgentAction.TURN_LEFT);
+	    R.addAktion(AgentAction.GO);   
+	    R.setPrioritaet(50);
+	    Regeln.add(new Regel(R));
+	    
+	    R.addAktion(AgentAction.TURN_RIGHT);
+	    R.addAktion(AgentAction.TURN_RIGHT);
+	    R.addAktion(AgentAction.GO);   
+	    R.setPrioritaet(70);
+	    Regeln.add(new Regel(R));
+	    
+	    R.loescheAktionen();
+	    R.addAktion(AgentAction.TURN_RIGHT);
+	    R.addAktion(AgentAction.GO);   
+	    R.setPrioritaet(40);
+	    Regeln.add(new Regel(R));
+	    
+	    R.loescheAktionen();
+	    R.addAktion(AgentAction.TURN_LEFT);
+	    R.addAktion(AgentAction.TURN_LEFT);
+	    R.addAktion(AgentAction.GO);   
+	    R.setPrioritaet(20);
+	    Regeln.add(new Regel(R));
+	    
+	    R.loescheAktionen();
+	    R.addAktion(AgentAction.TURN_RIGHT);
+	    R.addAktion(AgentAction.TURN_RIGHT);
+	    R.addAktion(AgentAction.GO);   
+	    R.setPrioritaet(30);
+	    Regeln.add(new Regel(R));
+	    
 	    for(int i=0; i<AnzahlSimulationen; i++) {
 			int Ergebnis = 0;
 			int BesuchteFelder = 0;
 		    RegelAgent Regeler = new RegelAgent();
+		    Regeler.addRegeln(Regeln);
 		    try {
 		    	Ergebnis = ExerciseUtils.exerciseTwo(Regeler, Visualisierung, PauseZwSchritten);
 		    	BesuchteFelder = Regeler.getBesuchteFelder();
