@@ -302,7 +302,7 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 		return Aktion;
 	}
 	
-	private int getNahestenGoldklumpen() {
+	private int getNaechstenGoldklumpen() {
 		// Fehler keine Goldklumpen oder keine Wege
 		if(RestlicheGoldklumpen.isEmpty() || WegeZumGold.isEmpty())
 			return -1;
@@ -347,12 +347,13 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 				return AgentAction.WAIT;
 			}
 			// Waehle den nahesten Goldklumpen aus
-			AktGoldklumpenIndex = getNahestenGoldklumpen();
+			AktGoldklumpenIndex = getNaechstenGoldklumpen();
 			}
 		
 		// Wir sind auf dem Weg zum naechsten Goldklumpen.
 		// Sind wir auf dem aktuellen Wegpunkt?
-		if(//!WegeZumGold.isEmpty() && WegeZumGold.size() > AktGoldklumpenIndex &&
+		if(AktGoldklumpenIndex != -1 &&
+				!WegeZumGold.isEmpty() && !WegeZumGold.get(AktGoldklumpenIndex).isEmpty() &&
 				(WegeZumGold.get(AktGoldklumpenIndex).getFirst().getKoordinaten().getFirstValue() == AktX) && 
 				(WegeZumGold.get(AktGoldklumpenIndex).getFirst().getKoordinaten().getSecondValue() == AktY)) 
 			WegeZumGold.get(AktGoldklumpenIndex).removeFirst();
