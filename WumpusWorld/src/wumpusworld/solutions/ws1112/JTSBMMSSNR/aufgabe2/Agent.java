@@ -9,12 +9,13 @@ import model.wumpusworld.environment.CompleteCavePerception;
 import model.wumpusworld.environment.NeighbourhoodPerception;
 
 public class Agent extends NeighbourhoodPerceivingAgent{
-    private Orientation Blickrichtung = Orientation.NORTH;
+    private Orientation Blickrichtung;
     public int zustand; // Gibt an in welchem Zustand (siehe Agenten_Automat.jpeg) wir sind
 	public AgentZustand automat;
 	public NeighbourhoodPerception ansicht;
 
 	public Agent(){
+		Blickrichtung = Orientation.NORTH;
 		automat = new AgentZustand();
 		zustand = 0; // wir starten natuerlich im Zustand 0
 	}
@@ -58,10 +59,68 @@ public class Agent extends NeighbourhoodPerceivingAgent{
 	 * @return
 	 */
 	int berechne_Aktionen_zum_Feld(int ziel_Feld){
-		int aktionen = 0;
-		if(ansicht.getNeighbourHood()[ziel_Feld].equals(CaveGroundType.PIT))
-			return aktionen;
-		return aktionen;
+		int x; // wird fuer die modulo Rechnung benutzt, da das hier ein symetrisches Problem ist
+		if(ziel_Feld == 8) // Das Feld wo der Agent selber drauf steht
+			return 0;
+		// Falls das Feld eine Falle oder nicht zum Spielfeld gehört 
+		// sollen keine Aktionen gezaehlt werden!
+		if(ansicht.getNeighbourHood()[ziel_Feld].equals(CaveGroundType.PIT) || ansicht.getNeighbourHood()[ziel_Feld] == null)
+			return -1;
+		
+		if(Blickrichtung == Orientation.NORTH) x=0;
+		else if(Blickrichtung == Orientation.EAST) x=2;
+		else if(Blickrichtung == Orientation.SOUTH) x=4;
+		else x=6; // Orientation.WEST
+		
+		// Die Felder Westen, Osten und denn Modulo weiter fuer die anderen Faelle
+		if(ziel_Feld == (0+x) % 8 || ziel_Feld == (4+x) % 8)
+			return 2;
+		// Das Feld Sueden, also gegenueber und denn mudulo so weiter
+		else if(ziel_Feld == (6+x) % 8)
+			return 3;
+		
+		// Die Eckfelder Nordwest
+		else if(ziel_Feld == (1+x) % 8){
+			if(ansicht.getNeighbourHood()[(2+x) % 8].equals(CaveGroundType.PIT)){
+				if(ansicht.getNeighbourHood()[(0+x) % 8].equals(CaveGroundType.PIT))
+					return -2; // zwei Fallen versperren den Weg
+				return 4;
+			}
+			else 
+				return 3;
+		}
+		// Die Eckfelder Nordost
+		else if(ziel_Feld == (3+x) % 8){
+			if(ansicht.getNeighbourHood()[(2+x) % 8].equals(CaveGroundType.PIT)){
+				if(ansicht.getNeighbourHood()[(4+x) % 8].equals(CaveGroundType.PIT))
+					return -2; // zwei Fallen versperren den Weg
+				return 4;
+			}
+			else 
+				return 3;
+		}
+		// Das Eckfeld Suedwest
+		else if(ziel_Feld == (7+x) % 8){
+			if(ansicht.getNeighbourHood()[(0+x) % 8].equals(CaveGroundType.PIT)){
+				if(ansicht.getNeighbourHood()[(6+x) % 8].equals(CaveGroundType.PIT))
+					return -2; // zwei Fallen versperren den Weg
+				return 5;
+			}
+			else
+				return 4;
+		}
+		// Das Eckfeld Suedost
+		else if(ziel_Feld == (6+x) % 8){
+			if(ansicht.getNeighbourHood()[(4+x) % 8].equals(CaveGroundType.PIT)){
+				if(ansicht.getNeighbourHood()[(6+x) % 8].equals(CaveGroundType.PIT))
+					return -2; // zwei Fallen versperren den Weg
+				return 5;
+			}
+			else
+				return 4;
+		}
+		else // Das Feld Norden bzw genau das feld vor dem Agenten
+			return 1;
 	}
 	/**
 	 * Der Agent sieht den fiesen Wumpus
