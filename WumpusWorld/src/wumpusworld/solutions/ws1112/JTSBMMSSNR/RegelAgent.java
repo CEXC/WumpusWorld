@@ -13,7 +13,7 @@ import model.wumpusworld.environment.NeighbourhoodPerception;
 
 public class RegelAgent extends NeighbourhoodPerceivingAgent {
 	// Buchfuehrung
-	int BesuchteFelder=0;
+	int BesuchteFelder=1;
 	// Regelsatz
 	LinkedList<Regel> Regeln = new LinkedList<Regel>();
 	
@@ -55,7 +55,10 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 			if(NR.IstRegelAnwendbar(WumpusGerochen, WumpusGesehen, WumpusVoraus, 
 									GoldGesehen, NichtsFestgestellt, Gefangen)) {
 				// Regel anwenden
-				return AktionAusfuehren(NR.berechneRegelAktion(Wahrnehmung, AltePositionen));
+				AgentAction Aktion = AktionAusfuehren(NR.berechneRegelAktion(Wahrnehmung, AltePositionen));
+				if(Aktion == AgentAction.GO)
+					BesuchteFelder++;
+				return Aktion;
 			}
 		}
 		return AgentAction.WAIT;
