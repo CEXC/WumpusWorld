@@ -161,9 +161,12 @@ public class Agent extends NeighbourhoodPerceivingAgent{
 		
 		// Die Eckfelder Nordwest
 		else if(ziel_Feld == (1+x) % 8){
-			if(ansicht.getNeighbourHood()[(2+x) % 8].getType().equals(CaveGroundType.PIT)){
-				if(ansicht.getNeighbourHood()[(0+x) % 8].getType().equals(CaveGroundType.PIT))
+			if(getAnsicht().getNeighbourHood()[(2+x) % 8].getType().equals(CaveGroundType.PIT)){
+				if(getAnsicht().getNeighbourHood()[(0+x) % 8].getType().equals(CaveGroundType.PIT))
 					return -2; // zwei Fallen versperren den Weg
+				return 4;
+			}
+			else if(getAnsicht().getNeighbourHood()[(0+x) % 8].getType().equals(CaveGroundType.PIT)){
 				return 4;
 			}
 			else 
@@ -171,19 +174,24 @@ public class Agent extends NeighbourhoodPerceivingAgent{
 		}
 		// Die Eckfelder Nordost
 		else if(ziel_Feld == (3+x) % 8){
-			if(ansicht.getNeighbourHood()[(2+x) % 8].getType().equals(CaveGroundType.PIT)){
-				if(ansicht.getNeighbourHood()[(4+x) % 8].getType().equals(CaveGroundType.PIT))
+			if(getAnsicht().getNeighbourHood()[(2+x) % 8].getType().equals(CaveGroundType.PIT)){
+				if(getAnsicht().getNeighbourHood()[(4+x) % 8].getType().equals(CaveGroundType.PIT))
 					return -2; // zwei Fallen versperren den Weg
 				return 4;
 			}
+			else if(getAnsicht().getNeighbourHood()[(4+x) % 8].getType().equals(CaveGroundType.PIT))
+				return 4;
 			else 
 				return 3;
 		}
 		// Das Eckfeld Suedwest
 		else if(ziel_Feld == (7+x) % 8){
-			if(ansicht.getNeighbourHood()[(0+x) % 8].getType().equals(CaveGroundType.PIT)){
-				if(ansicht.getNeighbourHood()[(6+x) % 8].getType().equals(CaveGroundType.PIT))
+			if(getAnsicht().getNeighbourHood()[(0+x) % 8].getType().equals(CaveGroundType.PIT)){
+				if(getAnsicht().getNeighbourHood()[(6+x) % 8].getType().equals(CaveGroundType.PIT))
 					return -2; // zwei Fallen versperren den Weg
+				return 5;
+			}
+			else if(getAnsicht().getNeighbourHood()[(6+x) % 8].getType().equals(CaveGroundType.PIT)){
 				return 5;
 			}
 			else
@@ -191,9 +199,12 @@ public class Agent extends NeighbourhoodPerceivingAgent{
 		}
 		// Das Eckfeld Suedost
 		else if(ziel_Feld == (6+x) % 8){
-			if(ansicht.getNeighbourHood()[(4+x) % 8].getType().equals(CaveGroundType.PIT)){
-				if(ansicht.getNeighbourHood()[(6+x) % 8].getType().equals(CaveGroundType.PIT))
+			if(getAnsicht().getNeighbourHood()[(4+x) % 8].getType().equals(CaveGroundType.PIT)){
+				if(getAnsicht().getNeighbourHood()[(6+x) % 8].getType().equals(CaveGroundType.PIT))
 					return -2; // zwei Fallen versperren den Weg
+				return 5;
+			}
+			else if(getAnsicht().getNeighbourHood()[(6+x) % 8].getType().equals(CaveGroundType.PIT)){
 				return 5;
 			}
 			else
@@ -238,6 +249,20 @@ public class Agent extends NeighbourhoodPerceivingAgent{
 		for(int i=0; i<8; i++){
 			if(getAnsicht().getNeighbourHood()[i] != null){
 				if(getAnsicht().getNeighbourHood()[i].isFilledWithGold()){
+					gesehen = i;
+				}
+			}
+		}
+		return gesehen;
+	}
+	
+	int leeres_Feld_gesehen(){
+		int gesehen = -1;
+		for(int i=0; i<8; i++){
+			if(getAnsicht().getNeighbourHood()[i] != null){
+				if(!getAnsicht().getNeighbourHood()[i].isFilledWithGold() && 
+				   !getAnsicht().getNeighbourHood()[i].isStench() &&
+				    getAnsicht().getNeighbourHood()[i].getType().equals(CaveGroundType.NORMAL)){
 					gesehen = i;
 				}
 			}

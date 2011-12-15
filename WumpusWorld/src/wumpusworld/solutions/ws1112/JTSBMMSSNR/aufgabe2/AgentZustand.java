@@ -17,7 +17,7 @@ public class AgentZustand {
 			zustand = agent.getZustand();
 			switch(zustand){
 			  case 0: //Goldzustand bzw. Goldmodus
-				  if(agent.wumpus_gerochen() != -1){
+				/*  if(agent.wumpus_gerochen() != -1){
 					  agent.setZiel_Feld(agent.ideales_Fluchtfeld(agent.wumpus_gerochen()));
 					  agent.setZustand(20);
 					  break;
@@ -30,12 +30,20 @@ public class AgentZustand {
 					  agent.setZustand(20);
 					  break;
 			      }
-			      else{
-					  agent.setZiel_Feld(7);
-					 // agent.setNaechster_zustand(1);
+			      else if(agent.leeres_Feld_gesehen() != -1){
+					  agent.setZiel_Feld(agent.leeres_Feld_gesehen());
 				      agent.setZustand(20);
 				      break;
 			      }
+			      else
+			    	  agent.setZiel_Feld(2);
+				      agent.setZustand(20);
+			    	  break;
+			     */
+				  agent.setZiel_Feld(3);
+				  agent.setNaechster_zustand(1);
+				  agent.setZustand(20);
+				  break;
 			  case 1:
 				  agent.setZiel_Feld(7);
 				  agent.setNaechster_zustand(0);
@@ -51,9 +59,14 @@ public class AgentZustand {
 				  
 				  break;
 			  case 5:
-				  
+			    
 				  break;
-			  case 20: //Bewegen Zustand
+			  case 19: // Wumpus gerochen
+				  agent.setZiel_Feld(agent.ideales_Fluchtfeld(agent.wumpus_gerochen()));
+				  agent.setNaechster_zustand(0);
+				  agent.setZustand(20);
+				  break;
+			  case 20: // Bewegen Zustand
 				  // falls eine Zielfeld ausgesucht wurde, was eine Falle oder 
 				  // Spielfeldrand ist oder wir unser Ziel_Feld erreicht haben
 				  if(agent.berechne_Aktionen_zum_Feld(agent.getZiel_Feld()) < 1 || agent.getZiel_Feld() == 8){
@@ -61,12 +74,11 @@ public class AgentZustand {
 						x--;
 						break;
 				  }
-				  else if(agent.wumpus_gerochen() != -1){
-					  agent.setZiel_Feld(agent.ideales_Fluchtfeld(agent.wumpus_gerochen()));
-					  agent.setNaechster_zustand(0);
-					  return agent.bewege();
+				/*  else if(agent.wumpus_gerochen() != -1){
+					  agent.setZustand(19);
+					  break;
 				  }
-				  else
+				  else*/
 					  return agent.bewege();
 			  default:
 				  System.out.print("Einer unerreichbarer Zustand wurder erreicht");
