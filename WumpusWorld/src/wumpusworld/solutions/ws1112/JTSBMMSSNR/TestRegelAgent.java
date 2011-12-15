@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
-import model.wumpusworld.agents.AgentAction;
 
 import examples.wumpusworld.exercises.ExerciseUtils;
 
@@ -50,47 +49,27 @@ public class TestRegelAgent {
 	    ArrayList<Regel> Regeln = new ArrayList<Regel>();
 	    
 	    Regel R = new Regel();
-	    R.addAktion(AgentAction.TURN_LEFT);
-	    R.addAktion(AgentAction.GO);   
-	    R.setPrioritaet(10);
-	    Regeln.add(new Regel(R));
-	    
-	    R.addAktion(AgentAction.TURN_RIGHT);
-	    R.addAktion(AgentAction.GO);   
-	    R.setPrioritaet(60);
-	    Regeln.add(new Regel(R));
-	    
-	    R.addAktion(AgentAction.TURN_LEFT);
-	    R.addAktion(AgentAction.TURN_LEFT);
-	    R.addAktion(AgentAction.GO);   
-	    R.setPrioritaet(50);
-	    Regeln.add(new Regel(R));
-	    
-	    R.addAktion(AgentAction.TURN_RIGHT);
-	    R.addAktion(AgentAction.TURN_RIGHT);
-	    R.addAktion(AgentAction.GO);   
+    
 	    R.setPrioritaet(70);
+	    R.setGoldGesehen(Bedingung.ZUTREFFEND);
+	    R.setGoldklumpenAufheben(true);
 	    Regeln.add(new Regel(R));
 	    
-	    R.loescheAktionen();
-	    R.addAktion(AgentAction.TURN_RIGHT);
-	    R.addAktion(AgentAction.GO);   
-	    R.setPrioritaet(40);
+	    R.setWumpusGesehen(Bedingung.ZUTREFFEND);
+	    R.setPrioritaet(200);
+	    R.setFliehen(true);
 	    Regeln.add(new Regel(R));
 	    
-	    R.loescheAktionen();
-	    R.addAktion(AgentAction.TURN_LEFT);
-	    R.addAktion(AgentAction.TURN_LEFT);
-	    R.addAktion(AgentAction.GO);   
-	    R.setPrioritaet(20);
+	    R.setWumpusVoraus(Bedingung.ZUTREFFEND);
+	    R.setPrioritaet(400);
+	    R.setPfeilAbschiessen(true);
 	    Regeln.add(new Regel(R));
 	    
-	    R.loescheAktionen();
-	    R.addAktion(AgentAction.TURN_RIGHT);
-	    R.addAktion(AgentAction.TURN_RIGHT);
-	    R.addAktion(AgentAction.GO);   
-	    R.setPrioritaet(30);
+	    R.setPrioritaet(10);
+	    R.setNichtsFestgestellt(Bedingung.ZUTREFFEND);
+	    R.setBewegen(true);
 	    Regeln.add(new Regel(R));
+
 	    
 	    for(int i=0; i<AnzahlSimulationen; i++) {
 			int Ergebnis = 0;
