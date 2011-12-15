@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import model.wumpusworld.CaveGround;
+import model.wumpusworld.CaveGroundType;
 import model.wumpusworld.Orientation;
 import model.wumpusworld.agents.AgentAction;
 import model.wumpusworld.agents.NeighbourhoodPerceivingAgent;
@@ -28,6 +30,7 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 	int AktX = -1;
 	int AktY = -1;
 	Orientation Blickrichtung = Orientation.NORTH;
+	CaveGround Nachbarschaft[];
 	// speichere die letzten drei Positionen + die aktuelle um nicht immer hin und her zu laufen
 	LinkedList<CavePosition> AltePositionen = new LinkedList<CavePosition>();
 	
@@ -38,16 +41,16 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 		AktX = getCavePosition().getX();
 		AktY = getCavePosition().getY();
 		Blickrichtung = getCavePosition().getOrientation();
+		Nachbarschaft = Wahrnehmung.getNeighbourHood();
 		AltePositionen.addFirst(getCavePosition());
 		if(AltePositionen.size() > 4)
 			AltePositionen.removeLast();
-		//updateWumpusGerochen();
+		updateWumpusGerochen();
 		updateWumpusGesehen();
-		/*
 		updateWumpusVoraus();
 		updateGoldGesehen();
+		updateGefangen();
 		updateNichtsFestgestellt();
-		updateGefangen();*/
 		
 		// alle Regeln durchlaufen und von den zutreffenden die mit der hoechsten Prioritaet
 		// ausfuehren
@@ -112,7 +115,67 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 		if(Wahrnehmung.getCurrentCaveGround().isStench())
 			WumpusGesehen = true;
 	}
-		
+	
+	protected void updateWumpusGerochen() {
+		WumpusGerochen = false;
+		for(CaveGround Feld : Nachbarschaft) {
+			if((Feld != null) && Feld.isStench())
+				WumpusGerochen = true;
+		}
+	}
+	
+	protected void updateWumpusVoraus() {
+		WumpusVoraus = false;
+		int ErstesFeld = 7; // Westen
+		if(Blickrichtung == Orientation.NORTH)
+			ErstesFeld = 1;
+		if(Blickrichtung == Orientation.EAST)
+			ErstesFeld = 3;
+		if(Blickrichtung == Orientation.SOUTH)
+			ErstesFeld = 5;
+		WumpusVoraus = true;
+		for(int i=0; i<3; i++) {
+			if(!Nachbarschaft[ErstesFeld+i].isStench())
+				WumpusVoraus = false;
+		}
+	}
+	
+	protected void updateGoldGesehen() {
+		GoldGesehen = false;
+		for(CaveGround Feld : Nachbarschaft) {
+			if((Feld != null) && Feld.isFilledWithGold())
+				GoldGesehen = true;
+		}
+	}
+	
+	protected void updateGefangen() {
+		Gefangen = false;
+		if( ((Wahrnehmung.getNorth() == null) || (Wahrnehmung.getNorth().getType() == CaveGroundType.PIT)) &&
+			((Wahrnehmung.getEast() == null) || (Wahrnehmung.getEast().getType() == CaveGroundType.PIT)) &&
+			((Wahrnehmung.getSouth() == null) || (Wahrnehmung.getSouth().getType() == CaveGroundType.PIT)) &&
+			((Wahrnehmung.getWest() == null) || (Wahrnehmung.getWest().getType() == CaveGroundType.PIT)) )
+			Gefangen = true;
+	}
+	
+	// Diese Funktion ist voll ausprogrammiert, da wir uns nicht auf die Reihenfolge des Aufrufs
+	// der updateFunktionen verlassen wollen.
+	protected void updateNichtsFestgestellt() {
+		NichtsFestgestellt = true;
+		for(CaveGround Feld : Nachbarschaft) {
+			// Wir sind an einer Seite, es gibt Gold, der Wumpus ist in der Naehe
+			if((null == Feld) || (Feld.isFilledWithGold()) || (Feld.isStench())) { 
+				NichtsFestgestellt = false;
+				return ;
+			}
+		}
+		// es kann auch noch was an der aktuellen Position sein
+		if(Wahrnehmung.getCurrentCaveGround().isFilledWithGold() || 
+			Wahrnehmung.getCurrentCaveGround().isStench()) {
+			NichtsFestgestellt = false;
+		}
+			
+	}
+	
 	public int getBesuchteFelder() {
 		return BesuchteFelder;
 	}
