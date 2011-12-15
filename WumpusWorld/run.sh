@@ -25,3 +25,5 @@ java -cp .:./* wumpusworld.solutions.ws1112.JTSBMMSSNR.TestGoldsammelAgent AS "H
 echo "Starte mit A*-Spezial"
 date "+%c"
 java -cp .:./* wumpusworld.solutions.ws1112.JTSBMMSSNR.TestGoldsammelAgent ASS "H${ANZAHL}I" $RNDSEED 1>/dev/null 2>> "../Error.txt"
+echo "fertig"
+date "+%c"
