@@ -50,11 +50,9 @@ public class AgentZustand {
 				  agent.setZustand(20);
 			      break;
 			  case 2:
-				  agent.setZustand(3);
-				  return null;
+				  break;
 			  case 3:
-				  agent.setZustand(1);
-				  return null;
+				  break;
 			  case 4:
 				  
 				  break;
@@ -69,7 +67,7 @@ public class AgentZustand {
 			  case 20: // Bewegen Zustand
 				  // falls eine Zielfeld ausgesucht wurde, was eine Falle oder 
 				  // Spielfeldrand ist oder wir unser Ziel_Feld erreicht haben
-				  if(agent.berechne_Aktionen_zum_Feld(agent.getZiel_Feld()) < 1 || agent.getZiel_Feld() == 8){
+			/*	  if(agent.berechne_Aktionen_zum_Feld(agent.getZiel_Feld()) < 1 || agent.getZiel_Feld() == 8){
 						agent.setZustand(agent.getNaechster_zustand());
 						x--;
 						break;
