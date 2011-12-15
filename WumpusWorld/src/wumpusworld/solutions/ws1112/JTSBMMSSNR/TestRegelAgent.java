@@ -50,25 +50,26 @@ public class TestRegelAgent {
 	    
 	    Regel R = new Regel();
     
-	    R.setPrioritaet(70);
-	    R.setGoldGesehen(Bedingung.ZUTREFFEND);
+	    
+	    R.addStatus(new GoldGesehen(true));
 	    R.setGoldklumpenAufheben(true);
+	    R.setPrioritaet(70);
 	    Regeln.add(new Regel(R));
 	    
-	    R.setWumpusGesehen(Bedingung.ZUTREFFEND);
-	    R.setPrioritaet(200);
+	    /*R.addStatus(SituationsStatusID.WUMPUSGEROCHEN, true);
 	    R.setFliehen(true);
+	    R.setPrioritaet(200);
 	    Regeln.add(new Regel(R));
 	    
-	    R.setWumpusVoraus(Bedingung.ZUTREFFEND);
-	    R.setPrioritaet(400);
+	    R.addStatus(SituationsStatusID.WUMPUSVORAUS, true);
 	    R.setPfeilAbschiessen(true);
+	    R.setPrioritaet(400);
 	    Regeln.add(new Regel(R));
-	    
-	    R.setPrioritaet(10);
-	    R.setNichtsFestgestellt(Bedingung.ZUTREFFEND);
+	  	   
+	    R.addStatus(SituationsStatusID.NICHTSFESTGESTELLT, true);
 	    R.setBewegen(true);
-	    Regeln.add(new Regel(R));
+	    R.setPrioritaet(10);
+	    Regeln.add(new Regel(R));*/
 	    
 	    for(int i=0; i<AnzahlSimulationen; i++) {
 			int Ergebnis = 0;
@@ -76,6 +77,11 @@ public class TestRegelAgent {
 		    RegelAgent Regeler = new RegelAgent();
 		    // SituationsStatus hinzufuegen
 		    Regeler.addSituationsStatus(new WumpusVoraus());
+		    Regeler.addSituationsStatus(new WumpusGerochen());
+		    Regeler.addSituationsStatus(new WumpusGesehen());
+		    Regeler.addSituationsStatus(new GoldGesehen());
+		    Regeler.addSituationsStatus(new Gefangen());
+		    Regeler.addSituationsStatus(new NichtsFestgestellt());
 		    Regeler.addRegeln(Regeln);
 		    try {
 		    	Ergebnis = ExerciseUtils.exerciseTwo(Regeler, Visualisierung, PauseZwSchritten);

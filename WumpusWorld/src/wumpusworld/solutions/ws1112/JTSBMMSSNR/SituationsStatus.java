@@ -12,8 +12,9 @@ public abstract class SituationsStatus {
 	public abstract void updateStatus(LinkedList<CavePosition> Positionen, CaveGround Nachbarschaft[], 
 										NeighbourhoodPerception Wahrnehmung);
 	
-	public SituationsStatus(SituationsStatusID ID) {
+	public SituationsStatus(SituationsStatusID ID, boolean Anzutreffen) {
 		this.ID = ID;
+		this.Anzutreffen = Anzutreffen;
 	}
 	
 	public boolean istAnzutreffen() {
@@ -22,5 +23,22 @@ public abstract class SituationsStatus {
 
 	public void setAnzutreffen(boolean anzutreffen) {
 		Anzutreffen = anzutreffen;
+	}
+	
+	final public boolean equals(Object Objekt) {
+		if (this == Objekt) {
+			return true;
+			}
+		if (Objekt == null)
+			return false;
+			
+	 	if(getClass() != Objekt.getClass())
+	 		return false;
+	 	
+	 	final SituationsStatus Status = (SituationsStatus) Objekt;	
+	 	if(ID != Status.ID)
+	 		return false;
+	 	
+		return true;
 	}
 }

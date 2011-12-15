@@ -8,18 +8,11 @@ import model.wumpusworld.environment.CavePosition;
 import model.wumpusworld.environment.NeighbourhoodPerception;
 
 public class Regel implements Comparable<Regel> {
-	// Beschreibung der Situation erstmal fest
-	// theoretisch koennte auch dies als Liste gebaut werden 
-	// und ueber die Festlegung im Agenten mehr oder weniger 
-	// Bedingungen erstellt werden
-	Bedingung WumpusGerochen = Bedingung.EGAL;
-	Bedingung WumpusGesehen = Bedingung.EGAL;
-	Bedingung WumpusVoraus = Bedingung.EGAL;
-	Bedingung GoldGesehen = Bedingung.EGAL;
-	Bedingung NichtsFestgestellt = Bedingung.EGAL;
-	Bedingung Gefangen = Bedingung.EGAL;
+	// StatusListe zur Beschreibung der Situation
+	LinkedList<SituationsStatus> StatusListe = new LinkedList<SituationsStatus>();
 	
-	// Aktionen, die bei der Situation ausgefuehrt werden soll
+	// Aktionen, die bei der Situation ausgefuehrt werden sollen
+	// Koennte auch als Liste sehr flexibel gehandhabt werden
 	boolean GoldklumpenAufheben = false;
 	boolean PfeilAbschiessen = false;
 	boolean Bewegen = false;
@@ -40,7 +33,6 @@ public class Regel implements Comparable<Regel> {
 	public RegelAktion berechneRegelAktion(NeighbourhoodPerception Wahrnehmung, LinkedList<CavePosition> Positionen) {
 		this.Wahrnehmung = Wahrnehmung;
 		this.Positionen = Positionen;
-		
 		
 		Aktion = null;
 		// Diese Abarbeitungsreihenfolge ist jetzt erstmal fest eingebaut
@@ -92,33 +84,23 @@ public class Regel implements Comparable<Regel> {
 	protected RegelAktion berechneBewegung() {
 		return null;
 	}
-	public boolean IstRegelAnwendbar(boolean WumpusGerochen, boolean WumpusGesehen, boolean WumpusVoraus,
-										boolean GoldGesehen, boolean NichtsFestgestellt, boolean Gefangen) {
-		if(!IstBedingungZutreffend(this.WumpusGerochen, WumpusGerochen))
-			return false;
-		if(!IstBedingungZutreffend(this.WumpusGesehen, WumpusGesehen))
-			return false;
-		if(!IstBedingungZutreffend(this.WumpusVoraus, WumpusVoraus))
-			return false;
-		if(!IstBedingungZutreffend(this.GoldGesehen, GoldGesehen))
-			return false;
-		if(!IstBedingungZutreffend(this.NichtsFestgestellt, NichtsFestgestellt))
-			return false;
-		if(!IstBedingungZutreffend(this.Gefangen, Gefangen))
-			return false;
+	public boolean IstRegelAnwendbar(LinkedList<SituationsStatus> StatusListe) {
+		for(SituationsStatus Status : this.StatusListe) {
+			// Wenn der Status vom Agenten gar nicht zur Verfuegung gestellt wird,
+			// kann er in unserem Sinne nicht gelten
+			if(!StatusListe.contains(Status))
+				return false;
+			if(Status.istAnzutreffen() != StatusListe.get(StatusListe.indexOf(Status)).istAnzutreffen())
+				return false;
+		}
 		return true;
 	}
 	
-	protected boolean IstBedingungZutreffend(Bedingung B, boolean Wert) {
-		if(B == Bedingung.EGAL)
-			return true;
-		if((B == Bedingung.ZUTREFFEND) && Wert)
-			return true;
-		if((B == Bedingung.NICHTZUTREFFEND) && !Wert)
-			return true;
-		return false;
+	public void addStatus(SituationsStatus Status) {
+		if(!StatusListe.contains(Status))
+			StatusListe.add(Status);
 	}
-	
+		
  	protected boolean IstFeldBetretbar(CaveGround Feld) {
 		if(Feld == null)
 			return false;
@@ -144,11 +126,14 @@ public class Regel implements Comparable<Regel> {
 			return true;
 			}
 		
-		if((WumpusGerochen != R.WumpusGerochen) || (WumpusGesehen != R.WumpusGesehen) ||
-				(GoldGesehen != R.GoldGesehen) || (NichtsFestgestellt != R.NichtsFestgestellt) ||
-				(Gefangen != R.Gefangen))
+		//StatusListe
+		if(StatusListe.size() != R.StatusListe.size())
 			return false;
-
+		for(SituationsStatus Status : StatusListe) {
+			if(!R.StatusListe.contains(Status))
+				return false;
+		}
+			
 		if((GoldklumpenAufheben != R.GoldklumpenAufheben) || (PfeilAbschiessen != R.PfeilAbschiessen) ||
 				(Bewegen != R.Bewegen) || (Warten != R.Warten) || (Fliehen != R.Fliehen) || 
 				(Jagen!= R.Jagen))
@@ -183,42 +168,7 @@ public class Regel implements Comparable<Regel> {
 	public void setAktion(RegelAktion Aktion) {
 		this.Aktion = Aktion;
 	}
-	public Bedingung getGefangen() {
-		return Gefangen;
-	}
-	public void setGefangen(Bedingung Gefangen) {
-		this.Gefangen = Gefangen;
-	}
-	public Bedingung getWumpusGerochen() {
-		return WumpusGerochen;
-	}
-	public void setWumpusGerochen(Bedingung WumpusGerochen) {
-		this.WumpusGerochen = WumpusGerochen;
-	}
-	public Bedingung getWumpusGesehen() {
-		return WumpusGesehen;
-	}
-	public void setWumpusGesehen(Bedingung WumpusGesehen) {
-		this.WumpusGesehen = WumpusGesehen;
-	}
-	public Bedingung getWumpusVoraus() {
-		return WumpusVoraus;
-	}
-	public void setWumpusVoraus(Bedingung WumpusVoraus) {
-		this.WumpusVoraus = WumpusVoraus;
-	}
-	public Bedingung getGoldGesehen() {
-		return GoldGesehen;
-	}
-	public void setGoldGesehen(Bedingung GoldGesehen) {
-		this.GoldGesehen = GoldGesehen;
-	}
-	public Bedingung getNichtsFestgestellt() {
-		return NichtsFestgestellt;
-	}
-	public void setNichtsFestgestellt(Bedingung NichtsFestgestellt) {
-		this.NichtsFestgestellt = NichtsFestgestellt;
-	}
+
 	public boolean istGoldklumpenAufheben() {
 		return GoldklumpenAufheben;
 	}
@@ -266,12 +216,7 @@ public class Regel implements Comparable<Regel> {
 	}
 	
 	public Regel(Regel R) {
-		WumpusGerochen = R.WumpusGerochen;
-		WumpusGesehen = R.WumpusGesehen;
-		WumpusVoraus = R.WumpusVoraus;
-		GoldGesehen = R.GoldGesehen;
-		NichtsFestgestellt = R.NichtsFestgestellt;
-		Gefangen = R.Gefangen;
+		StatusListe.addAll(R.StatusListe);
 		
 		GoldklumpenAufheben = R.GoldklumpenAufheben;
 		PfeilAbschiessen = R.PfeilAbschiessen;

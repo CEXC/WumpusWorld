@@ -46,7 +46,10 @@ public class WumpusVoraus extends SituationsStatus {
 				Anzutreffen = true;
 		}
 	}
+	public WumpusVoraus(boolean Anzutreffen) {
+		super(SituationsStatusID.WUMPUSVORAUS, Anzutreffen);
+	}
 	public WumpusVoraus() {
-		super(SituationsStatusID.WUMPUSVORAUS);
+		super(SituationsStatusID.WUMPUSVORAUS, false);
 	}
 }
