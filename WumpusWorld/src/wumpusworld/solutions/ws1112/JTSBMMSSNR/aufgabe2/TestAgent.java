@@ -14,7 +14,7 @@ public class TestAgent {
 		SimSystem.consoleOut = false;
 		    Agent James = new Agent();
 		    try {
-		    	ExerciseUtils.exerciseTwo(James, true, 500L);
+		    	ExerciseUtils.exerciseTwo(James, true, 1000L);
 		    }
 		    catch (Throwable t) {
 		    	t.printStackTrace();

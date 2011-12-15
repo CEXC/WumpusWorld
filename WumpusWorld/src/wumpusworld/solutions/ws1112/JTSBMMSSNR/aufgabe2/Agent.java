@@ -10,7 +10,9 @@ import model.wumpusworld.environment.NeighbourhoodPerception;
 
 public class Agent extends NeighbourhoodPerceivingAgent{
     private Orientation Blickrichtung;
+    public int ziel_Feld; // Gibt an in welches Feld der Agent will
     public int zustand; // Gibt an in welchem Zustand (siehe Agenten_Automat.jpeg) wir sind
+	public int naechster_zustand;
 	public AgentZustand automat;
 	public NeighbourhoodPerception ansicht;
 
@@ -18,6 +20,7 @@ public class Agent extends NeighbourhoodPerceivingAgent{
 		Blickrichtung = Orientation.NORTH;
 		automat = new AgentZustand();
 		zustand = 0; // wir starten natuerlich im Zustand 0
+		ziel_Feld = 8; // Feld wo der Agent drauf steht
 	}
 	public int getZustand() {
 		return zustand;
@@ -25,10 +28,21 @@ public class Agent extends NeighbourhoodPerceivingAgent{
 	public void setZustand(int zustand) {
 		this.zustand = zustand;
 	}
+	public int getNaechster_zustand() {
+		return naechster_zustand;
+	}
+	public void setNaechster_zustand(int naechsterZustand) {
+		naechster_zustand = naechsterZustand;
+	}
+	public int getZiel_Feld() {
+		return ziel_Feld;
+	}
+	public void setZiel_Feld(int zielFeld) {
+		ziel_Feld = zielFeld;
+	}
 	public NeighbourhoodPerception getAnsicht() {
 		return ansicht;
 	}
-
 	public void setAnsicht(NeighbourhoodPerception ansicht) {
 		this.ansicht = ansicht;
 	}
@@ -43,13 +57,75 @@ public class Agent extends NeighbourhoodPerceivingAgent{
 	 * @param dreierFelder bsp. (Norden, Nordwest, Nordost)
 	 * @return anzahl der Goldstuecke
 	 */
-	int berechne_Anzahl_Goldstuecke(CaveGround[] felder){
+	public int berechne_Anzahl_Goldstuecke(CaveGround[] felder){
 		int anzahl = 0;
 		for(CaveGround aktfeld : felder){
 			if(aktfeld.isFilledWithGold()) 
 				anzahl ++;
 		}
 		return anzahl;
+	}
+	/**
+	 * Der Agent versucht ein "ideales" Fluchtfeld zu finden
+	 * Ist noch etwas verbesserungsmöglich, wenn man nämlich versucht
+	 * die Anzahl der freien Felder zwischen den Wumpussen zu zaehlen
+	 * und sich danach dann richtet wohin man geht
+	 * @param wo_Wumpus_gerochen
+	 * @return
+	 */
+	public int ideales_Fluchtfeld(int wo_Wumpus_gerochen){
+		int feld,x=0;
+		feld = (wo_Wumpus_gerochen + 4) % 8;
+		while(getAnsicht().getNeighbourHood()[feld] == null || getAnsicht().getNeighbourHood()[feld].isStench() ||
+			  getAnsicht().getNeighbourHood()[feld].getType().equals(CaveGroundType.PIT)){
+			feld = (feld + 1) % 8;
+			x++;
+			if(x==8)
+				return 8; //keine Bewegung sondern Wait
+		}
+		return feld;
+	}
+	
+	/**
+	 * Der Agent bewegt sich mit so wenig Zuegen wie moeglich
+	 * zu seinem Ziel. Dabei errechnet er sich einfach die Anzahl
+	 * der Aktionen wenn er sich links, rechts bzw gehen wuerde
+	 * und wenn diese Anzahl niedriger ist als die ausgangsAnzahl der
+	 * Aktionen tut er diese Aktion
+	 * @param ziel_feld
+	 * @return
+	 */
+	public AgentAction bewege(){
+		int alte_anzahl_Aktionen,x;
+	
+		alte_anzahl_Aktionen = berechne_Aktionen_zum_Feld(getZiel_Feld());
+		
+		setZustand(20); // Bewegung noch nicht abgeschlossen
+		
+		Blickrichtung = Blickrichtung.turnLeft();
+		if(berechne_Aktionen_zum_Feld(getZiel_Feld()) < alte_anzahl_Aktionen){
+			return AgentAction.TURN_LEFT;
+		}
+		
+		Blickrichtung = Blickrichtung.turnRight();
+		Blickrichtung = Blickrichtung.turnRight();
+		if(berechne_Aktionen_zum_Feld(getZiel_Feld()) < alte_anzahl_Aktionen){
+			return AgentAction.TURN_RIGHT;
+		}
+		Blickrichtung = Blickrichtung.turnLeft();
+		
+		// vorm Gehen muss das neue Ziel_feld bestimmt werden
+		// da es nach dem gehen ja "veraendert" wurde
+		if(Blickrichtung == Orientation.NORTH) x=0;
+		else if(Blickrichtung == Orientation.EAST) x=2;
+		else if(Blickrichtung == Orientation.SOUTH) x=4;
+		else x=6; // Orientation.WEST
+		
+		if(getZiel_Feld() == (2+x)%8) setZiel_Feld(8); // Bewegung abgeschlossen
+		if(getZiel_Feld() == (1+x)%8) setZiel_Feld((0+x)%8);
+		if(getZiel_Feld() == (3+x)%8) setZiel_Feld((4+x)%8);
+		
+		return AgentAction.GO;
 	}
 	/**
 	 * Der Agent berechnet wieviele mnimale Aktionen drehen + gehen 
@@ -62,10 +138,14 @@ public class Agent extends NeighbourhoodPerceivingAgent{
 		int x; // wird fuer die modulo Rechnung benutzt, da das hier ein symetrisches Problem ist
 		if(ziel_Feld == 8) // Das Feld wo der Agent selber drauf steht
 			return 0;
-		// Falls das Feld eine Falle oder nicht zum Spielfeld gehört 
-		// sollen keine Aktionen gezaehlt werden!
-		if(ansicht.getNeighbourHood()[ziel_Feld].equals(CaveGroundType.PIT) || ansicht.getNeighbourHood()[ziel_Feld] == null)
+		// Falls Spielfeldende
+		if(getAnsicht().getNeighbourHood()[ziel_Feld] == null)
 			return -1;
+
+		// Falls das Feld eine Falle  
+		// sollen keine Aktionen gezaehlt werden!
+		if(getAnsicht().getNeighbourHood()[ziel_Feld].getType().equals(CaveGroundType.PIT))
+			return -2;
 		
 		if(Blickrichtung == Orientation.NORTH) x=0;
 		else if(Blickrichtung == Orientation.EAST) x=2;
@@ -81,8 +161,8 @@ public class Agent extends NeighbourhoodPerceivingAgent{
 		
 		// Die Eckfelder Nordwest
 		else if(ziel_Feld == (1+x) % 8){
-			if(ansicht.getNeighbourHood()[(2+x) % 8].equals(CaveGroundType.PIT)){
-				if(ansicht.getNeighbourHood()[(0+x) % 8].equals(CaveGroundType.PIT))
+			if(ansicht.getNeighbourHood()[(2+x) % 8].getType().equals(CaveGroundType.PIT)){
+				if(ansicht.getNeighbourHood()[(0+x) % 8].getType().equals(CaveGroundType.PIT))
 					return -2; // zwei Fallen versperren den Weg
 				return 4;
 			}
@@ -91,8 +171,8 @@ public class Agent extends NeighbourhoodPerceivingAgent{
 		}
 		// Die Eckfelder Nordost
 		else if(ziel_Feld == (3+x) % 8){
-			if(ansicht.getNeighbourHood()[(2+x) % 8].equals(CaveGroundType.PIT)){
-				if(ansicht.getNeighbourHood()[(4+x) % 8].equals(CaveGroundType.PIT))
+			if(ansicht.getNeighbourHood()[(2+x) % 8].getType().equals(CaveGroundType.PIT)){
+				if(ansicht.getNeighbourHood()[(4+x) % 8].getType().equals(CaveGroundType.PIT))
 					return -2; // zwei Fallen versperren den Weg
 				return 4;
 			}
@@ -101,8 +181,8 @@ public class Agent extends NeighbourhoodPerceivingAgent{
 		}
 		// Das Eckfeld Suedwest
 		else if(ziel_Feld == (7+x) % 8){
-			if(ansicht.getNeighbourHood()[(0+x) % 8].equals(CaveGroundType.PIT)){
-				if(ansicht.getNeighbourHood()[(6+x) % 8].equals(CaveGroundType.PIT))
+			if(ansicht.getNeighbourHood()[(0+x) % 8].getType().equals(CaveGroundType.PIT)){
+				if(ansicht.getNeighbourHood()[(6+x) % 8].getType().equals(CaveGroundType.PIT))
 					return -2; // zwei Fallen versperren den Weg
 				return 5;
 			}
@@ -111,8 +191,8 @@ public class Agent extends NeighbourhoodPerceivingAgent{
 		}
 		// Das Eckfeld Suedost
 		else if(ziel_Feld == (6+x) % 8){
-			if(ansicht.getNeighbourHood()[(4+x) % 8].equals(CaveGroundType.PIT)){
-				if(ansicht.getNeighbourHood()[(6+x) % 8].equals(CaveGroundType.PIT))
+			if(ansicht.getNeighbourHood()[(4+x) % 8].getType().equals(CaveGroundType.PIT)){
+				if(ansicht.getNeighbourHood()[(6+x) % 8].getType().equals(CaveGroundType.PIT))
 					return -2; // zwei Fallen versperren den Weg
 				return 5;
 			}
@@ -138,11 +218,31 @@ public class Agent extends NeighbourhoodPerceivingAgent{
 	 * @param Hoehle
 	 * @return true falls Wumpus gerochen
 	 */
-	boolean wumpus_gerochen(){
-		if(anzahl_gruener_Felder() > 0)
-			return true;
-		else 
-			return false;
+	int wumpus_gerochen(){
+		int gerochen = -1;
+		for(int i=0; i<8; i++){
+			if(getAnsicht().getNeighbourHood()[i] != null){
+				if(getAnsicht().getNeighbourHood()[i].isStench()){
+					gerochen = i;
+				}
+			}
+		}
+		return gerochen;
+	}
+	/**
+	 * Zahltag ^^
+	 * @return
+	 */
+	int Gold_gesehen(){
+		int gesehen = -1;
+		for(int i=0; i<8; i++){
+			if(getAnsicht().getNeighbourHood()[i] != null){
+				if(getAnsicht().getNeighbourHood()[i].isFilledWithGold()){
+					gesehen = i;
+				}
+			}
+		}
+		return gesehen;
 	}
 	/**
 	 * Die Anzahl der gruenen Felder wird vom Agenten gezaehlt
