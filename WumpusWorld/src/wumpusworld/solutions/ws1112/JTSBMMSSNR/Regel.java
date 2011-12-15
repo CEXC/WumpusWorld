@@ -219,13 +219,13 @@ public class Regel implements Comparable<Regel> {
 	public void setNichtsFestgestellt(Bedingung NichtsFestgestellt) {
 		this.NichtsFestgestellt = NichtsFestgestellt;
 	}
-	public boolean isGoldklumpenAufheben() {
+	public boolean istGoldklumpenAufheben() {
 		return GoldklumpenAufheben;
 	}
 	public void setGoldklumpenAufheben(boolean GoldklumpenAufheben) {
 		this.GoldklumpenAufheben = GoldklumpenAufheben;
 	}
-	public boolean isPfeilAbschiessen() {
+	public boolean istPfeilAbschiessen() {
 		return PfeilAbschiessen;
 	}
 
@@ -233,7 +233,7 @@ public class Regel implements Comparable<Regel> {
 		this.PfeilAbschiessen = PfeilAbschiessen;
 	}
 
-	public boolean isBewegen() {
+	public boolean istBewegen() {
 		return Bewegen;
 	}
 
@@ -241,7 +241,7 @@ public class Regel implements Comparable<Regel> {
 		this.Bewegen = Bewegen;
 	}
 
-	public boolean isWarten() {
+	public boolean istWarten() {
 		return Warten;
 	}
 
@@ -249,7 +249,7 @@ public class Regel implements Comparable<Regel> {
 		this.Warten = Warten;
 	}
 
-	public boolean isFliehen() {
+	public boolean istFliehen() {
 		return Fliehen;
 	}
 
@@ -257,7 +257,7 @@ public class Regel implements Comparable<Regel> {
 		this.Fliehen = Fliehen;
 	}
 
-	public boolean isJagen() {
+	public boolean istJagen() {
 		return Jagen;
 	}
 

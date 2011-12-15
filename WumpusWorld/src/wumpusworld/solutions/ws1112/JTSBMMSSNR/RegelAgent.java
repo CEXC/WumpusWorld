@@ -20,6 +20,7 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 	LinkedList<Regel> Regeln = new LinkedList<Regel>();
 	
 	// Aktuelle Situation
+	LinkedList<SituationsStatus> StatusListe = new LinkedList<SituationsStatus>();
 	boolean WumpusGerochen = false;
 	boolean WumpusGesehen = false;
 	boolean WumpusVoraus = false;
@@ -45,6 +46,11 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 		AltePositionen.addFirst(getCavePosition());
 		if(AltePositionen.size() > 4)
 			AltePositionen.removeLast();
+		
+		for(SituationsStatus Status : StatusListe) {
+			Status.updateStatus(AltePositionen, Nachbarschaft, Wahrnehmung);
+		}
+		
 		updateWumpusGerochen();
 		updateWumpusGesehen();
 		updateWumpusVoraus();
@@ -124,19 +130,39 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 		}
 	}
 	
+	// ACHTUNG:
+	// Es gibt Situationen in denen wir dies nicht sicher bestimmen koennen
+	// Wir liefern dann FALSE zurueck
+	// Bsp:  
+	/*
+	 * |----------------|
+	 * |   |   | S | W? |
+	 * |----------------|
+	 * |   | A | S | W? |
+	 * |----------------|
+	 * Spielfeldende
+	 */
 	protected void updateWumpusVoraus() {
 		WumpusVoraus = false;
-		int ErstesFeld = 7; // Westen
-		if(Blickrichtung == Orientation.NORTH)
-			ErstesFeld = 1;
-		if(Blickrichtung == Orientation.EAST)
-			ErstesFeld = 3;
-		if(Blickrichtung == Orientation.SOUTH)
-			ErstesFeld = 5;
-		WumpusVoraus = true;
-		for(int i=0; i<3; i++) {
-			if(!Nachbarschaft[ErstesFeld+i].isStench())
-				WumpusVoraus = false;
+		// Geruch quer durch uns => Wumpus ist da 
+		if( (null != Wahrnehmung.getNorth()) && Wahrnehmung.getNorth().isStench() && 
+			(null != Wahrnehmung.getSouth()) && Wahrnehmung.getSouth().isStench()) {
+			if((null != Wahrnehmung.getWest()) && Wahrnehmung.getWest().isStench() 
+					&& (Blickrichtung==Orientation.WEST))
+				WumpusVoraus = true;
+			else if((null != Wahrnehmung.getEast()) && Wahrnehmung.getEast().isStench() 
+					&& (Blickrichtung==Orientation.EAST))
+				WumpusVoraus = true;
+		}
+		// Geruch quer durch uns => Wumpus ist da 
+		if( (null != Wahrnehmung.getWest()) && Wahrnehmung.getWest().isStench() && 
+			(null != Wahrnehmung.getEast()) && Wahrnehmung.getEast().isStench()) {
+			if((null != Wahrnehmung.getNorth()) && Wahrnehmung.getNorth().isStench() 
+					&& (Blickrichtung==Orientation.NORTH))
+				WumpusVoraus = true;
+			else if((null != Wahrnehmung.getSouth()) && Wahrnehmung.getSouth().isStench() && 
+					(Blickrichtung==Orientation.SOUTH))
+				WumpusVoraus = true;
 		}
 	}
 	
@@ -179,7 +205,11 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 	public int getBesuchteFelder() {
 		return BesuchteFelder;
 	}
-
+	
+	public void addSituationsStatus(SituationsStatus Status) {
+		StatusListe.add(Status);
+	}
+	
 	public void addRegel(Regel NeueRegel) {
 		if(!Regeln.contains(NeueRegel))
 			Regeln.add(NeueRegel);

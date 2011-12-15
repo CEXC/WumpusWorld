@@ -69,12 +69,13 @@ public class TestRegelAgent {
 	    R.setNichtsFestgestellt(Bedingung.ZUTREFFEND);
 	    R.setBewegen(true);
 	    Regeln.add(new Regel(R));
-
 	    
 	    for(int i=0; i<AnzahlSimulationen; i++) {
 			int Ergebnis = 0;
 			int BesuchteFelder = 0;
 		    RegelAgent Regeler = new RegelAgent();
+		    // SituationsStatus hinzufuegen
+		    Regeler.addSituationsStatus(new WumpusVoraus());
 		    Regeler.addRegeln(Regeln);
 		    try {
 		    	Ergebnis = ExerciseUtils.exerciseTwo(Regeler, Visualisierung, PauseZwSchritten);
