@@ -8,7 +8,10 @@ import model.wumpusworld.environment.CavePosition;
 import model.wumpusworld.environment.NeighbourhoodPerception;
 
 public class Regel implements Comparable<Regel> {
-	// Beschreibung der Situation
+	// Beschreibung der Situation erstmal fest
+	// theoretisch koennte auch dies als Liste gebaut werden 
+	// und ueber die Festlegung im Agenten mehr oder weniger 
+	// Bedingungen erstellt werden
 	Bedingung WumpusGerochen = Bedingung.EGAL;
 	Bedingung WumpusGesehen = Bedingung.EGAL;
 	Bedingung WumpusVoraus = Bedingung.EGAL;
@@ -30,19 +33,65 @@ public class Regel implements Comparable<Regel> {
 	int Prioritaet = 1;
 		
 	// Die aktuelle Situationbeschreibende Variablen
-	//NeighbourhoodPerception Wahrnehmung;
+	NeighbourhoodPerception Wahrnehmung;
 	//ArrayList<Orientation> BetretbareFelder = new ArrayList<Orientation>();
+	LinkedList<CavePosition> Positionen;
 	
 	public RegelAktion berechneRegelAktion(NeighbourhoodPerception Wahrnehmung, LinkedList<CavePosition> Positionen) {
-		if(PfeilAbschiessen)
-			Aktion.PfeilAbschiessen = true;
-		else if(GoldklumpenAufheben)
-			Aktion.GoldAufheben = true;
-		else if(Warten) 
+		this.Wahrnehmung = Wahrnehmung;
+		this.Positionen = Positionen;
+		
+		
+		Aktion = null;
+		// Diese Abarbeitungsreihenfolge ist jetzt erstmal fest eingebaut
+		// ggf. koennte man diese aber wiederum auch mittels Prioritaeten festlegen,
+		// falls jmd. zu viel Zeit hat:
+		// Aktionen, die bei Aktion ausfuehrbar sein sollen als Enum codieren
+		// eine Liste mit Tripel (fuer Tripel sollte es in core eine Hilfsklasse fuer geben)
+		// anlegen, wobei ein Tripel aus "enum der Aktionen", boolean, Prioritaet besteht
+		// sortieren nach Prioritaet und dann hier von hoehster bis niedrigster durchlaufen+
+		// anwenden.
+		// Durchreichen zu spaeteren Optionen Beispiel:
+		// Fliehen und Jagen = true; fuers Fliehen gibt es keine Sinnvolle Option => ich will 
+		// doch Jagen; berechneFlucht() liefert null zurueck
+		if((Aktion == null) && Fliehen)
+			Aktion = berechneFlucht();
+		if((Aktion == null) && Jagen)
+			Aktion = berechneJagd();
+		if((Aktion == null) && PfeilAbschiessen)
+			Aktion = berechneAbschuss();
+		if((Aktion == null) && GoldklumpenAufheben)
+			Aktion = berechneAufheben();
+		if((Aktion == null) && Bewegen)
+			Aktion = berechneBewegung();
+		if((Aktion == null) && Warten) {
+			Aktion = new RegelAktion();
 			Aktion.Ziel = Positionen.getFirst();
+		}
+
+		// Standard: nichts machen und bei aktueller Position bleiben...
+		if(Aktion == null) {
+			Aktion = new RegelAktion();
+			Aktion.Ziel = Positionen.getFirst();
+		}
 		return Aktion;
 	}
 	
+	protected RegelAktion berechneFlucht() {
+		return null;
+	}
+	protected RegelAktion berechneJagd() {
+		return null;
+	}
+	protected RegelAktion berechneAbschuss() {
+		return null;
+	}
+	protected RegelAktion berechneAufheben() {
+		return null;
+	}
+	protected RegelAktion berechneBewegung() {
+		return null;
+	}
 	public boolean IstRegelAnwendbar(boolean WumpusGerochen, boolean WumpusGesehen, boolean WumpusVoraus,
 										boolean GoldGesehen, boolean NichtsFestgestellt, boolean Gefangen) {
 		if(!IstBedingungZutreffend(this.WumpusGerochen, WumpusGerochen))
