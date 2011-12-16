@@ -58,7 +58,7 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 		return AgentAction.WAIT;
 	}
 	
-	protected AgentAction AktionAusfuehren(RegelAktion Aktion) {
+	protected AgentAction AktionAusfuehren(AgentenAktion Aktion) {
 		if(Aktion.PfeilAbschiessen)
 			return AgentAction.SHOOT_ARROW;
 		if(Aktion.GoldAufheben)

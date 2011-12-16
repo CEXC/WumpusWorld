@@ -20,7 +20,7 @@ public class Regel implements Comparable<Regel> {
 	boolean Fliehen = false;
 	boolean Jagen = false;
 	// berechnet
-	RegelAktion Aktion = new RegelAktion();
+	AgentenAktion Aktion = new AgentenAktion();
 
 	// Prioritaet groesser ist wichtiger Prioritaet >= 1
 	int Prioritaet = 1;
@@ -30,7 +30,7 @@ public class Regel implements Comparable<Regel> {
 	//ArrayList<Orientation> BetretbareFelder = new ArrayList<Orientation>();
 	LinkedList<CavePosition> Positionen;
 	
-	public RegelAktion berechneRegelAktion(NeighbourhoodPerception Wahrnehmung, LinkedList<CavePosition> Positionen) {
+	public AgentenAktion berechneRegelAktion(NeighbourhoodPerception Wahrnehmung, LinkedList<CavePosition> Positionen) {
 		this.Wahrnehmung = Wahrnehmung;
 		this.Positionen = Positionen;
 		
@@ -60,31 +60,31 @@ public class Regel implements Comparable<Regel> {
 		if((Aktion == null) && Bewegen)
 			Aktion = berechneBewegung();
 		if((Aktion == null) && Warten) {
-			Aktion = new RegelAktion();
+			Aktion = new AgentenAktion();
 			Aktion.Ziel = Positionen.getFirst();
 		}
 
 		// Standard: nichts machen und bei aktueller Position bleiben...
 		if(Aktion == null) {
-			Aktion = new RegelAktion();
+			Aktion = new AgentenAktion();
 			Aktion.Ziel = Positionen.getFirst();
 		}
 		return Aktion;
 	}
 	
-	protected RegelAktion berechneFlucht() {
+	protected AgentenAktion berechneFlucht() {
 		return null;
 	}
-	protected RegelAktion berechneJagd() {
+	protected AgentenAktion berechneJagd() {
 		return null;
 	}
-	protected RegelAktion berechneAbschuss() {
+	protected AgentenAktion berechneAbschuss() {
 		return null;
 	}
-	protected RegelAktion berechneAufheben() {
+	protected AgentenAktion berechneAufheben() {
 		return null;
 	}
-	protected RegelAktion berechneBewegung() {
+	protected AgentenAktion berechneBewegung() {
 		return null;
 	}
 	public boolean IstRegelAnwendbar(LinkedList<SituationsStatus> StatusListe) {
@@ -168,7 +168,7 @@ public class Regel implements Comparable<Regel> {
 	public int getPrioritaet() {
 		return Prioritaet;
 	}
-	public void setAktion(RegelAktion Aktion) {
+	public void setAktion(AgentenAktion Aktion) {
 		this.Aktion = Aktion;
 	}
 
