@@ -42,7 +42,10 @@ public class Regel implements Comparable<Regel> {
 		// eine Liste mit Tripel (fuer Tripel sollte es in core eine Hilfsklasse fuer geben)
 		// anlegen, wobei ein Tripel aus "enum der Aktionen", boolean, Prioritaet besteht
 		// sortieren nach Prioritaet und dann hier von hoehster bis niedrigster durchlaufen+
-		// anwenden.
+		// anwenden. 
+		// Oder man implementiert es wie die Situationsbeschreibung. Mal schauen,
+		// wie viel Lust ich in der naechsten Woche dazu habe
+		// waere vermutlich gut, da man so ganz einfach neue Ideen fuer Aktionen umsetzen kann.
 		// Durchreichen zu spaeteren Optionen Beispiel:
 		// Fliehen und Jagen = true; fuers Fliehen gibt es keine Sinnvolle Option => ich will 
 		// doch Jagen; berechneFlucht() liefert null zurueck
