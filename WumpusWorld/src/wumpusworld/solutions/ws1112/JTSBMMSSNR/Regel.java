@@ -117,7 +117,28 @@ public class Regel implements Comparable<Regel> {
 				}
 			}
 		}
-		perfektes_Fluchtfeld = gr_freie_Feldreihe.get(gr_freie_Feldreihe.size() / 2); // int sollte abgerundet werden >.<
+		// falls nur eines der Eckfelder oder mehrere Eckfelder frei sind 
+		// soll gewartet werden, da dieses klueger ist!
+		if(	   (gr_freie_Feldreihe.get(0).equals(Umgebung.get(1)) || 
+				gr_freie_Feldreihe.get(0).equals(Umgebung.get(3)) ||
+				gr_freie_Feldreihe.get(0).equals(Umgebung.get(5)) ||
+				gr_freie_Feldreihe.get(0).equals(Umgebung.get(7))) &&
+				gr_freie_Feldreihe.size() < 2){
+			Aktion.Ziel = Positionen.getFirst();
+			return Aktion; // RegalAktion WAIT
+		}
+		perfektes_Fluchtfeld = gr_freie_Feldreihe.get(gr_freie_Feldreihe.size() >> 1); // wie /2 aber mit abrunden ;)
+
+		// falls Eckfeld muessen wir eines daneben nehmen
+		if(		perfektes_Fluchtfeld.equals(Umgebung.get(1)) || 
+				perfektes_Fluchtfeld.equals(Umgebung.get(3)) ||
+				perfektes_Fluchtfeld.equals(Umgebung.get(5)) ||
+				perfektes_Fluchtfeld.equals(Umgebung.get(7))){
+			
+			// falls nach dem Eckfeld kein Feld mehr kommt muessen wir das davor nehmen
+			if((perfektes_Fluchtfeld = gr_freie_Feldreihe.get((gr_freie_Feldreihe.size() >> 1) + 1)) == null)
+				perfektes_Fluchtfeld = gr_freie_Feldreihe.get((gr_freie_Feldreihe.size() >> 1) - 1);
+		}
 		Aktion.Ziel = perfektes_Fluchtfeld;
 		return Aktion;
 	}
