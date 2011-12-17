@@ -79,7 +79,7 @@ public class Regel implements Comparable<Regel> {
 		Aktion = new RegelAktion(); //@ TODO falls dies noetig ist?
 		
 		//@ TODO LinkedList<CavePosition> berechneWumpusGeruchFelder(); // NUR UMGEBUNG!!!
-		LinkedList<CavePosition> wo_Wumpus_gerochen = berechneWumpusGeruchFelder();
+		LinkedList<CavePosition> wo_Wumpus_gerochen = null; //= berechneWumpusGeruchFelder();
 		if(wo_Wumpus_gerochen.size() == 0) // Wumpus wurde nirgends gerochen
 			return null; // Fehlerfall, eigentlich sollte dieser Zweig nicht auftreten
 		if(wo_Wumpus_gerochen.size() >= 8){ // Wumpus ueberall gerochen
