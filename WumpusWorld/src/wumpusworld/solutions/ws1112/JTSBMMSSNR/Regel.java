@@ -76,10 +76,9 @@ public class Regel implements Comparable<Regel> {
 		// Da wir auf die aktuelle Umgebung nur mit CaveGround zugreifen koennen
 		// muessen wir auch bei aktuellen CavePosition die Nachbarfelder relativ
 		// halten sprich West=0, Nordwest=1, Norden =2 ...
-		Aktion = new RegelAktion(); //@ TODO falls dies noetig ist?
+		Aktion = new RegelAktion();
 		
-		//@ TODO LinkedList<CavePosition> berechneWumpusGeruchFelder(); // NUR UMGEBUNG!!!
-		LinkedList<CavePosition> wo_Wumpus_gerochen = null; //= berechneWumpusGeruchFelder();
+		LinkedList<CavePosition> wo_Wumpus_gerochen = berechneWumpusGeruchFelder();
 		if(wo_Wumpus_gerochen.size() == 0) // Wumpus wurde nirgends gerochen
 			return null; // Fehlerfall, eigentlich sollte dieser Zweig nicht auftreten
 		if(wo_Wumpus_gerochen.size() >= 8){ // Wumpus ueberall gerochen
@@ -148,8 +147,48 @@ public class Regel implements Comparable<Regel> {
 	protected RegelAktion berechneAbschuss() {
 		return null;
 	}
+	
+	// Falls wir schon auf einem Goldfeld stehen wird dieses aufgehoben
+	// Ansonsten gehen wir zu den meisten Goldstuecken
+	// bei himmelsrichtung ist [0] = West, [1] = Nord, [2] = Ost, [3] = Sued
+	// fuer bsp himmelsrichtung[0] = [7,0,1] (Suedwest, West, Nordwest)
 	protected RegelAktion berechneAufheben() {
-		return null;
+		RegelAktion Aktion = new RegelAktion();
+		if(Wahrnehmung.getCurrentCaveGround().isFilledWithGold()){
+			Aktion.GoldAufheben = true;
+			return Aktion;
+		}
+		if(ZaehleGold(Wahrnehmung.getNeighbourHood()) == 0){
+			// Fehlerfall eigentlich sollten wir schon mindestens ein Gold 
+			// gesehen haben bevor wir berechneAufheben machen
+			return null;
+		}
+		int x=0; // kleines offset fuer die genau Bestimmung der Richtung
+		int besteRichtung=0; // West=0, Nord=1, Ost=2, Sued=3
+		int momentane_Anzahl=0,gr_Anzahl=0; // Anzahl der jeweiligen Goldstuecke in der jeweiligen Himmelsrichtung
+		CaveGround[][] himmelsrichtung = new CaveGround[4][3];
+		for(int i=0; i<4; i++){
+			for(int y=0; y<3; y++){
+				himmelsrichtung[i][y] = Wahrnehmung.getNeighbourHood()[y+7+x % 8];
+			}
+			x += 2;
+			momentane_Anzahl = ZaehleGold(himmelsrichtung[i]);
+			if(momentane_Anzahl > gr_Anzahl){
+				if(IstFeldBetretbar(Wahrnehmung.getNeighbourHood()[i*2])){
+					besteRichtung = i;
+				}
+				gr_Anzahl = momentane_Anzahl;
+			}
+		}
+		// Wir brauchen ja ne CavePosition fuer Aktion.Ziel
+		LinkedList<CavePosition> Umgebung = new LinkedList<CavePosition>();
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX()-1,Positionen.getFirst().getY()  ));
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX()  ,Positionen.getFirst().getY()+1));
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX()+1,Positionen.getFirst().getY()  ));
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX(),  Positionen.getFirst().getY()-1));
+		
+		Aktion.Ziel = Umgebung.get(besteRichtung);
+		return Aktion;
 	}
 	protected RegelAktion berechneBewegung() {
 		return null;
@@ -170,7 +209,40 @@ public class Regel implements Comparable<Regel> {
 		if(!StatusListe.contains(Status))
 			StatusListe.add(Status);
 	}
+	
+	public int ZaehleGold(CaveGround[] Felder){
+		int anzahl = 0;
+		for(CaveGround feld : Felder){
+			if(feld.isFilledWithGold())
+				anzahl++;
+		}
+		return anzahl;
+	}
+	
+	public LinkedList<CavePosition> berechneWumpusGeruchFelder(){
+		LinkedList<CavePosition> GeruchsFelder = new LinkedList<CavePosition>();
+		// Umgebung des Agenten damit ich mit Umgebung.get(x) auf die aktuell
+		// betrachtete Umgebung zugreifen kann und mit der AgentenPosition vergleichen
+		// kann
+		LinkedList<CavePosition> Umgebung = new LinkedList<CavePosition>();
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX()-1,Positionen.getFirst().getY()  ));
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX()-1,Positionen.getFirst().getY()+1));
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX()  ,Positionen.getFirst().getY()+1));
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX()+1,Positionen.getFirst().getY()+1));
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX()+1,Positionen.getFirst().getY()  ));
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX()+1,Positionen.getFirst().getY()-1));
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX(),  Positionen.getFirst().getY()-1));
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX()-1,Positionen.getFirst().getY()-1));
 		
+		for(int i=0; i<8; i++){
+			if(Wahrnehmung.getNeighbourHood()[i].isStench()){
+				GeruchsFelder.add(Umgebung.get(i));
+			}
+		}
+		
+		return GeruchsFelder;
+	}
+	
  	protected boolean IstFeldBetretbar(CaveGround Feld) {
 		if(Feld == null)
 			return false;
