@@ -191,7 +191,26 @@ public class Regel implements Comparable<Regel> {
 		return Aktion;
 	}
 	protected RegelAktion berechneBewegung() {
-		return null;
+		// Hat noch optimierungspotential indem wir ein erreichen des Spielfeldende
+		// mit in die Zufallsberechnung mit einbeziehen
+		RegelAktion Aktion = new RegelAktion();
+		// Wir brauchen ja ne CavePosition fuer Aktion.Ziel
+		LinkedList<CavePosition> Umgebung = new LinkedList<CavePosition>();
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX()-1,Positionen.getFirst().getY()  ));
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX()  ,Positionen.getFirst().getY()+1));
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX()+1,Positionen.getFirst().getY()  ));
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX(),  Positionen.getFirst().getY()-1));
+		
+		int Zielrichtung; //0 = West, 1 = Nord, 2 = Ost, 3 = Sued
+		// solange des Feld nicht betretbar oder die Zielrichtung gleich der CavePosition
+		// aus der wir kommen generieren wir eine Zufallsrichtung
+		do{
+			Zielrichtung = (int) Math.random()*4;
+		}while(!IstFeldBetretbar(Wahrnehmung.getNeighbourHood()[Zielrichtung*2]) || 
+				Positionen.get(1).equals(Umgebung.get(Zielrichtung)));
+		
+		Aktion.Ziel = Umgebung.get(Zielrichtung);
+		return Aktion;
 	}
 	public boolean IstRegelAnwendbar(LinkedList<SituationsStatus> StatusListe) {
 		for(SituationsStatus Status : this.StatusListe) {
