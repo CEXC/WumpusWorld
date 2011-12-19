@@ -3,7 +3,7 @@ package wumpusworld.solutions.ws1112.JTSBMMSSNR;
 import java.util.LinkedList;
 
 import model.wumpusworld.CaveGround;
-import model.wumpusworld.agents.AgentAction;
+import model.wumpusworld.CaveGroundType;
 import model.wumpusworld.environment.CavePosition;
 import model.wumpusworld.environment.NeighbourhoodPerception;
 
@@ -15,9 +15,18 @@ public abstract class RegelAktion implements Comparable<RegelAktion> {
 		this.Prioritaet = Prioritaet;
 	}
 	
-	public abstract AgentAction berechneAktion(LinkedList<CavePosition> Positionen, CaveGround Nachbarschaft[], 
+	public abstract AgentenAktion berechneAktion(LinkedList<CavePosition> Positionen, CaveGround Nachbarschaft[], 
 			NeighbourhoodPerception Wahrnehmung, LinkedList<SituationsStatus> StatusListe);
 
+	protected boolean IstFeldBetretbar(CaveGround Feld) {
+		if(Feld == null)
+			return false;
+		if(Feld.getType() == CaveGroundType.PIT)
+			return false;
+		return true;
+	}
+	
+	
 	// Prioritaet groesser ist wichtiger Prioritaet >= 1
 	int Prioritaet = 1;
 		
@@ -32,21 +41,24 @@ public abstract class RegelAktion implements Comparable<RegelAktion> {
 		return 0;
 	}
 		
-	// ACHTUNG: Hier spielt die Prioritaet keine Rolle
+	// ACHTUNG: Hier spielt die Prioritaet eine Rolle
 	final public boolean equals(Object Objekt) {
-	if (this == Objekt) {
+		if (this == Objekt) {
+			return true;
+			}
+		if (Objekt == null)
+			return false;
+		
+		if(getClass() != Objekt.getClass())
+			return false;
+		
+		final RegelAktion RA = (RegelAktion) Objekt;	
+		if(ID != RA.ID)
+			return false;
+	
+		if(Prioritaet != RA.Prioritaet)
+			return false;
+		
 		return true;
-		}
-	if (Objekt == null)
-		return false;
-	
-	if(getClass() != Objekt.getClass())
-		return false;
-	
-	final RegelAktion RA = (RegelAktion) Objekt;	
-	if(ID != RA.ID)
-		return false;
-	
-	return true;
 	}
 }

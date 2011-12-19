@@ -2,23 +2,16 @@ package wumpusworld.solutions.ws1112.JTSBMMSSNR;
 
 import java.util.LinkedList;
 
-import model.wumpusworld.CaveGround;
-import model.wumpusworld.CaveGroundType;
 import model.wumpusworld.environment.CavePosition;
 import model.wumpusworld.environment.NeighbourhoodPerception;
 
 public class Regel implements Comparable<Regel> {
 	// StatusListe zur Beschreibung der Situation
 	LinkedList<SituationsStatus> StatusListe = new LinkedList<SituationsStatus>();
-	
 	// Aktionen, die bei der Situation ausgefuehrt werden sollen
-	// Koennte auch als Liste sehr flexibel gehandhabt werden
-	boolean GoldklumpenAufheben = false;
-	boolean PfeilAbschiessen = false;
-	boolean Bewegen = false;
-	boolean Warten = false;
-	boolean Fliehen = false;
-	boolean Jagen = false;
+	// sie werden von hoher zu niedriger Prioritaet durchprobiert
+	LinkedList<RegelAktion> AktionenListe = new LinkedList<RegelAktion>();
+	
 	// berechnet
 	AgentenAktion Aktion = new AgentenAktion();
 
@@ -30,40 +23,17 @@ public class Regel implements Comparable<Regel> {
 	//ArrayList<Orientation> BetretbareFelder = new ArrayList<Orientation>();
 	LinkedList<CavePosition> Positionen;
 	
-	public AgentenAktion berechneRegelAktion(NeighbourhoodPerception Wahrnehmung, LinkedList<CavePosition> Positionen) {
+	public AgentenAktion berechneRegelAktion(NeighbourhoodPerception Wahrnehmung, LinkedList<CavePosition> Positionen,
+											LinkedList<SituationsStatus> AgentenStatusListe) {
 		this.Wahrnehmung = Wahrnehmung;
 		this.Positionen = Positionen;
 		
 		Aktion = null;
-		// Diese Abarbeitungsreihenfolge ist jetzt erstmal fest eingebaut
-		// ggf. koennte man diese aber wiederum auch mittels Prioritaeten festlegen,
-		// falls jmd. zu viel Zeit hat:
-		// Aktionen, die bei Aktion ausfuehrbar sein sollen als Enum codieren
-		// eine Liste mit Tripel (fuer Tripel sollte es in core eine Hilfsklasse fuer geben)
-		// anlegen, wobei ein Tripel aus "enum der Aktionen", boolean, Prioritaet besteht
-		// sortieren nach Prioritaet und dann hier von hoehster bis niedrigster durchlaufen+
-		// anwenden. 
-		// Oder man implementiert es wie die Situationsbeschreibung. Mal schauen,
-		// wie viel Lust ich in der naechsten Woche dazu habe
-		// waere vermutlich gut, da man so ganz einfach neue Ideen fuer Aktionen umsetzen kann.
-		// Durchreichen zu spaeteren Optionen Beispiel:
-		// Fliehen und Jagen = true; fuers Fliehen gibt es keine Sinnvolle Option => ich will 
-		// doch Jagen; berechneFlucht() liefert null zurueck
-		if((Aktion == null) && Fliehen)
-			Aktion = berechneFlucht();
-		if((Aktion == null) && Jagen)
-			Aktion = berechneJagd();
-		if((Aktion == null) && PfeilAbschiessen)
-			Aktion = berechneAbschuss();
-		if((Aktion == null) && GoldklumpenAufheben)
-			Aktion = berechneAufheben();
-		if((Aktion == null) && Bewegen)
-			Aktion = berechneBewegung();
-		if((Aktion == null) && Warten) {
-			Aktion = new AgentenAktion();
-			Aktion.Ziel = Positionen.getFirst();
+		for(RegelAktion RA : AktionenListe) {
+			Aktion = RA.berechneAktion(Positionen, Wahrnehmung.getNeighbourHood(), Wahrnehmung, AgentenStatusListe);
+			if(Aktion != null)
+				break;
 		}
-
 		// Standard: nichts machen und bei aktueller Position bleiben...
 		if(Aktion == null) {
 			Aktion = new AgentenAktion();
@@ -72,28 +42,13 @@ public class Regel implements Comparable<Regel> {
 		return Aktion;
 	}
 	
-	protected AgentenAktion berechneFlucht() {
-		return null;
-	}
-	protected AgentenAktion berechneJagd() {
-		return null;
-	}
-	protected AgentenAktion berechneAbschuss() {
-		return null;
-	}
-	protected AgentenAktion berechneAufheben() {
-		return null;
-	}
-	protected AgentenAktion berechneBewegung() {
-		return null;
-	}
-	public boolean IstRegelAnwendbar(LinkedList<SituationsStatus> StatusListe) {
+	public boolean IstRegelAnwendbar(LinkedList<SituationsStatus> AgentenStatusListe) {
 		for(SituationsStatus Status : this.StatusListe) {
 			// Wenn der Status vom Agenten gar nicht zur Verfuegung gestellt wird,
 			// kann er in unserem Sinne nicht gelten
-			if(!StatusListe.contains(Status))
+			if(!AgentenStatusListe.contains(Status))
 				return false;
-			if(Status.istAnzutreffen() != StatusListe.get(StatusListe.indexOf(Status)).istAnzutreffen())
+			if(Status.istAnzutreffen() != AgentenStatusListe.get(AgentenStatusListe.indexOf(Status)).istAnzutreffen())
 				return false;
 		}
 		return true;
@@ -104,12 +59,9 @@ public class Regel implements Comparable<Regel> {
 			StatusListe.add(Status);
 	}
 		
- 	protected boolean IstFeldBetretbar(CaveGround Feld) {
-		if(Feld == null)
-			return false;
-		if(Feld.getType() == CaveGroundType.PIT)
-			return false;
-		return true;
+	public void addAktion(RegelAktion RA) {
+		if(!AktionenListe.contains(RA))
+			AktionenListe.add(RA);
 	}
 	
 	// Wir sortieren Regeln nach deren Prioritaet wichtiger vor weniger wichtig
@@ -137,10 +89,13 @@ public class Regel implements Comparable<Regel> {
 				return false;
 		}
 			
-		if((GoldklumpenAufheben != R.GoldklumpenAufheben) || (PfeilAbschiessen != R.PfeilAbschiessen) ||
-				(Bewegen != R.Bewegen) || (Warten != R.Warten) || (Fliehen != R.Fliehen) || 
-				(Jagen!= R.Jagen))
+		// AktionenListe
+		if(AktionenListe.size() != R.AktionenListe.size())
 			return false;
+		for(RegelAktion RA : AktionenListe) {
+			if(!R.AktionenListe.contains(RA))
+				return false;
+		}
 		
 		return true;
 	}
@@ -160,73 +115,19 @@ public class Regel implements Comparable<Regel> {
 		
 		return VergleichOhneP(R);
 	}
-
+	
 	public void setPrioritaet(int Prioritaet) {
 		if(Prioritaet >= 1) 
 			this.Prioritaet = Prioritaet;
 	}
+	
 	public int getPrioritaet() {
 		return Prioritaet;
-	}
-	public void setAktion(AgentenAktion Aktion) {
-		this.Aktion = Aktion;
-	}
-
-	public boolean istGoldklumpenAufheben() {
-		return GoldklumpenAufheben;
-	}
-	public void setGoldklumpenAufheben(boolean GoldklumpenAufheben) {
-		this.GoldklumpenAufheben = GoldklumpenAufheben;
-	}
-	public boolean istPfeilAbschiessen() {
-		return PfeilAbschiessen;
-	}
-
-	public void setPfeilAbschiessen(boolean PfeilAbschiessen) {
-		this.PfeilAbschiessen = PfeilAbschiessen;
-	}
-
-	public boolean istBewegen() {
-		return Bewegen;
-	}
-
-	public void setBewegen(boolean Bewegen) {
-		this.Bewegen = Bewegen;
-	}
-
-	public boolean istWarten() {
-		return Warten;
-	}
-
-	public void setWarten(boolean Warten) {
-		this.Warten = Warten;
-	}
-
-	public boolean istFliehen() {
-		return Fliehen;
-	}
-
-	public void setFliehen(boolean Fliehen) {
-		this.Fliehen = Fliehen;
-	}
-
-	public boolean istJagen() {
-		return Jagen;
-	}
-
-	public void setJagen(boolean Jagen) {
-		this.Jagen = Jagen;
 	}
 	
 	public Regel(Regel R) {
 		StatusListe.addAll(R.StatusListe);
-		
-		GoldklumpenAufheben = R.GoldklumpenAufheben;
-		PfeilAbschiessen = R.PfeilAbschiessen;
-		Bewegen = R.Bewegen;
-		Warten = R.Warten;
-		Fliehen = R.Fliehen;
-		Jagen = R.Jagen;
+		AktionenListe.addAll(R.AktionenListe);
 		Prioritaet = R.Prioritaet;
 		
 		Aktion = R.Aktion;

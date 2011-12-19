@@ -49,7 +49,8 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 		for(Regel NR : Regeln) {
 			if(NR.IstRegelAnwendbar(StatusListe)) {
 				// Regel anwenden
-				AgentAction Aktion = AktionAusfuehren(NR.berechneRegelAktion(Wahrnehmung, AltePositionen));
+				AgentAction Aktion = AktionAusfuehren(NR.berechneRegelAktion(Wahrnehmung, AltePositionen,
+														StatusListe));
 				if(Aktion == AgentAction.GO)
 					BesuchteFelder++;
 				return Aktion;

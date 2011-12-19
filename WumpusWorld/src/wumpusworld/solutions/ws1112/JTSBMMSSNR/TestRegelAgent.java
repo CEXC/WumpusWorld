@@ -52,24 +52,24 @@ public class TestRegelAgent {
     
 	    
 	    R.addStatus(new GoldGesehen(true));
-	    R.setGoldklumpenAufheben(true);
+	    R.addAktion(new GoldaufhebenAktion(100));
 	    R.setPrioritaet(70);
 	    Regeln.add(new Regel(R));
 	    
-	    /*R.addStatus(SituationsStatusID.WUMPUSGEROCHEN, true);
-	    R.setFliehen(true);
+	    
+	    R.addStatus(new WumpusGerochen(true));
+	    R.addAktion(new FliehenAktion(100));
 	    R.setPrioritaet(200);
 	    Regeln.add(new Regel(R));
 	    
-	    R.addStatus(SituationsStatusID.WUMPUSVORAUS, true);
-	    R.setPfeilAbschiessen(true);
+	    R.addStatus(new WumpusVoraus(true));
+	    R.addAktion(new PfeilabschiessenAktion(100));
 	    R.setPrioritaet(400);
 	    Regeln.add(new Regel(R));
-	  	   
-	    R.addStatus(SituationsStatusID.NICHTSFESTGESTELLT, true);
-	    R.setBewegen(true);
+	    
+	    R.addStatus(new NichtsFestgestellt(true));
+	    R.addAktion(new BewegenAktion(100));
 	    R.setPrioritaet(10);
-	    Regeln.add(new Regel(R));*/
 	    
 	    for(int i=0; i<AnzahlSimulationen; i++) {
 			int Ergebnis = 0;
