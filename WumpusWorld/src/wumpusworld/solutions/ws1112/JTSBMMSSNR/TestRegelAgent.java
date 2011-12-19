@@ -57,7 +57,7 @@ public class TestRegelAgent {
 	    Regeln.add(new Regel(R));
 	    
 	    
-	    R.addStatus(new WumpusGerochen(true));
+	   /*R.addStatus(new WumpusGerochen(true));
 	    R.addAktion(new FliehenAktion(100));
 	    R.setPrioritaet(200);
 	    Regeln.add(new Regel(R));
@@ -69,7 +69,7 @@ public class TestRegelAgent {
 	    
 	    R.addStatus(new NichtsFestgestellt(true));
 	    R.addAktion(new BewegenAktion(100));
-	    R.setPrioritaet(10);
+	    R.setPrioritaet(10);*/
 	    
 	    for(int i=0; i<AnzahlSimulationen; i++) {
 			int Ergebnis = 0;

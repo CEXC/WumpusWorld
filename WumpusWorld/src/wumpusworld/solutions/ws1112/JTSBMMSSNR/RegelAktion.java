@@ -35,6 +35,20 @@ public abstract class RegelAktion implements Comparable<RegelAktion> {
 		return anzahl;
 	}
 	
+	// Richtung 0=West, 1=Nord, 2=Ost, 3=Sued
+	public CavePosition getZielInRichtung(CavePosition Position, int Richtung) {
+		// ungueltige Richtung angegeben? => stehen bleiben
+		if( (Richtung<0) || (Richtung>3))
+			return Position;
+		// Wir brauchen ja ne CavePosition fuer Aktion.Ziel
+		CavePosition [] Umgebung = {
+				new CavePosition(Position.getX()-1, Position.getY()  ),
+				new CavePosition(Position.getX(),   Position.getY()+1),
+				new CavePosition(Position.getX()+1, Position.getY()  ),
+				new CavePosition(Position.getX(),   Position.getY()-1) };
+		return Umgebung[Richtung];
+	}
+	
 	public LinkedList<CavePosition> berechneWumpusGeruchFelder(LinkedList<CavePosition> Positionen){
 		LinkedList<CavePosition> GeruchsFelder = new LinkedList<CavePosition>();
 		// Umgebung des Agenten damit ich mit Umgebung.get(x) auf die aktuell
