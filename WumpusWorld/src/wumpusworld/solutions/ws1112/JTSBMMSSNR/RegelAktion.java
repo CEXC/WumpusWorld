@@ -15,8 +15,10 @@ public abstract class RegelAktion implements Comparable<RegelAktion> {
 		this.Prioritaet = Prioritaet;
 	}
 	
-	public abstract AgentenAktion berechneAktion(LinkedList<CavePosition> Positionen, CaveGround Nachbarschaft[], 
-			NeighbourhoodPerception Wahrnehmung, LinkedList<SituationsStatus> StatusListe);
+	public abstract AgentenAktion berechneAktion(LinkedList<CavePosition> Positionen, 
+												 CaveGround Nachbarschaft[], 
+												 NeighbourhoodPerception Wahrnehmung, 
+												 LinkedList<SituationsStatus> StatusListe);
 
 	protected boolean IstFeldBetretbar(CaveGround Feld) {
 		if(Feld == null)

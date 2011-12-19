@@ -41,6 +41,11 @@ public class TestRegelAgent {
 	    	else if(args[i].startsWith("H") && args[i].endsWith("I") && args[i].length() > 2) {
 	    		AnzahlSimulationen = Integer.parseInt(args[i].substring(1,args[i].length()-1));
 	    	}
+	    	else if(args[i].startsWith("R") && args[i].endsWith("L") && args[i].length() > 2) {
+	    		NeuesSeed = Long.parseLong(args[i].substring(1,args[i].length()-1));
+	    		SimSystem.getRNGGenerator().setSeed(NeuesSeed);
+	    		SeedErhalten = true;
+	    	}
 	    }
 	    
 	    int GesamtErgebnis = 0;
@@ -65,11 +70,14 @@ public class TestRegelAgent {
 	    R.addStatus(new WumpusVoraus(true));
 	    R.addAktion(new PfeilabschiessenAktion(100));
 	    R.setPrioritaet(400);
-	    Regeln.add(new Regel(R));
+	    Regeln.add(new Regel(R));*/
 	    
+	    R.resetStatusListe();
+	    R.resetAktionenListe();
 	    R.addStatus(new NichtsFestgestellt(true));
 	    R.addAktion(new BewegenAktion(100));
-	    R.setPrioritaet(10);*/
+	    R.setPrioritaet(10);
+	    Regeln.add(new Regel(R));
 	    
 	    for(int i=0; i<AnzahlSimulationen; i++) {
 			int Ergebnis = 0;

@@ -1,5 +1,6 @@
 package wumpusworld.solutions.ws1112.JTSBMMSSNR;
 
+import java.util.Collections;
 import java.util.LinkedList;
 
 import model.wumpusworld.environment.CavePosition;
@@ -23,7 +24,8 @@ public class Regel implements Comparable<Regel> {
 	//ArrayList<Orientation> BetretbareFelder = new ArrayList<Orientation>();
 	LinkedList<CavePosition> Positionen;
 	
-	public AgentenAktion berechneRegelAktion(NeighbourhoodPerception Wahrnehmung, LinkedList<CavePosition> Positionen,
+	public AgentenAktion berechneRegelAktion(NeighbourhoodPerception Wahrnehmung, 
+											LinkedList<CavePosition> Positionen,
 											LinkedList<SituationsStatus> AgentenStatusListe) {
 		this.Wahrnehmung = Wahrnehmung;
 		this.Positionen = Positionen;
@@ -59,11 +61,20 @@ public class Regel implements Comparable<Regel> {
 			StatusListe.add(Status);
 	}
 	
+	public void resetStatusListe() {
+		StatusListe.clear();
+	}
+	
 	public void addAktion(RegelAktion RA) {
 		if(!AktionenListe.contains(RA))
 			AktionenListe.add(RA);
+		Collections.sort(AktionenListe);
 		}
-			
+	
+	public void resetAktionenListe() {
+		AktionenListe.clear();
+	}
+	
 	// Wir sortieren Regeln nach deren Prioritaet wichtiger vor weniger wichtig
 	@Override
 	public int compareTo(Regel R) {

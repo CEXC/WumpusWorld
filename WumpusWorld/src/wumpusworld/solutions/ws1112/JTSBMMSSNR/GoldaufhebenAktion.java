@@ -14,8 +14,9 @@ public class GoldaufhebenAktion extends RegelAktion {
 
 	@Override
 	public AgentenAktion berechneAktion(LinkedList<CavePosition> Positionen,
-			CaveGround[] Nachbarschaft, NeighbourhoodPerception Wahrnehmung,
-			LinkedList<SituationsStatus> StatusListe) {
+										CaveGround[] Nachbarschaft, 
+										NeighbourhoodPerception Wahrnehmung,
+										LinkedList<SituationsStatus> StatusListe) {
 		// Falls wir schon auf einem Goldfeld stehen wird dieses aufgehoben
 		// Ansonsten gehen wir zu den meisten Goldstuecken
 		// bei himmelsrichtung ist [0] = West, [1] = Nord, [2] = Ost, [3] = Sued
@@ -36,7 +37,7 @@ public class GoldaufhebenAktion extends RegelAktion {
 		for(int i=0; i<4; i++){
 			MomentaneAnzahl=0;
 			for(int y=0; y<3; y++){
-				if((Nachbarschaft[(i*2+y)%8] != null) && Nachbarschaft[(i*2+y)%8].isFilledWithGold())
+				if((Nachbarschaft[(7+i*2+y)%8] != null) && Nachbarschaft[(7+i*2+y)%8].isFilledWithGold())
 					MomentaneAnzahl++;
 			}
 			if(MomentaneAnzahl > GroessteAnzahl){
