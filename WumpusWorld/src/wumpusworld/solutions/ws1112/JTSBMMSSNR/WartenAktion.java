@@ -9,8 +9,8 @@ import model.wumpusworld.environment.NeighbourhoodPerception;
 
 public class WartenAktion extends RegelAktion {
 
-	public WartenAktion(RegelAktionID ID) {
-		super(RegelAktionID.WARTEN);
+	public WartenAktion(int Prioritaet) {
+		super(RegelAktionID.WARTEN, Prioritaet);
 	}
 
 	@Override

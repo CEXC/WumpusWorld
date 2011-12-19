@@ -9,8 +9,8 @@ import model.wumpusworld.environment.NeighbourhoodPerception;
 
 public class PfeilabschiessenAktion extends RegelAktion {
 
-	public PfeilabschiessenAktion(RegelAktionID ID) {
-		super(RegelAktionID.PFEILABSCHIESSEN);
+	public PfeilabschiessenAktion(int Prioritaet) {
+		super(RegelAktionID.PFEILABSCHIESSEN, Prioritaet);
 	}
 
 	@Override

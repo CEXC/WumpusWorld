@@ -9,8 +9,8 @@ import model.wumpusworld.environment.NeighbourhoodPerception;
 
 public class BewegenAktion extends RegelAktion {
 
-	public BewegenAktion(RegelAktionID ID) {
-		super(RegelAktionID.BEWEGEN);
+	public BewegenAktion(int Prioritaet) {
+		super(RegelAktionID.BEWEGEN, Prioritaet);
 	}
 
 	@Override

@@ -9,8 +9,8 @@ import model.wumpusworld.environment.NeighbourhoodPerception;
 
 public class GoldaufhebenAktion extends RegelAktion {
 
-	public GoldaufhebenAktion(RegelAktionID ID) {
-		super(RegelAktionID.GOLDKLUMPENAUFHEBEN);
+	public GoldaufhebenAktion(int Prioritaet) {
+		super(RegelAktionID.GOLDKLUMPENAUFHEBEN, Prioritaet);
 	}
 
 	@Override
