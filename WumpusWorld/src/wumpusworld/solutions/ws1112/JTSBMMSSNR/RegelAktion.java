@@ -26,6 +26,31 @@ public abstract class RegelAktion implements Comparable<RegelAktion> {
 		return true;
 	}
 	
+	public int ZaehleGold(CaveGround[] Felder){
+		int anzahl = 0;
+		for(CaveGround feld : Felder){
+			if(feld.isFilledWithGold())
+				anzahl++;
+		}
+		return anzahl;
+	}
+	
+	public LinkedList<CavePosition> berechneWumpusGeruchFelder(LinkedList<CavePosition> Positionen){
+		LinkedList<CavePosition> GeruchsFelder = new LinkedList<CavePosition>();
+		// Umgebung des Agenten damit ich mit Umgebung.get(x) auf die aktuell
+		// betrachtete Umgebung zugreifen kann und mit der AgentenPosition vergleichen
+		// kann
+		LinkedList<CavePosition> Umgebung = new LinkedList<CavePosition>();
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX()-1,Positionen.getFirst().getY()  ));
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX()-1,Positionen.getFirst().getY()+1));
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX()  ,Positionen.getFirst().getY()+1));
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX()+1,Positionen.getFirst().getY()+1));
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX()+1,Positionen.getFirst().getY()  ));
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX()+1,Positionen.getFirst().getY()-1));
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX(),  Positionen.getFirst().getY()-1));
+		Umgebung.add(new CavePosition(Positionen.getFirst().getX()-1,Positionen.getFirst().getY()-1));
+		return GeruchsFelder;
+	}
 	
 	// Prioritaet groesser ist wichtiger Prioritaet >= 1
 	int Prioritaet = 1;

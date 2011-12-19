@@ -58,12 +58,12 @@ public class Regel implements Comparable<Regel> {
 		if(!StatusListe.contains(Status))
 			StatusListe.add(Status);
 	}
-		
+	
 	public void addAktion(RegelAktion RA) {
 		if(!AktionenListe.contains(RA))
 			AktionenListe.add(RA);
-	}
-	
+		}
+			
 	// Wir sortieren Regeln nach deren Prioritaet wichtiger vor weniger wichtig
 	@Override
 	public int compareTo(Regel R) {
