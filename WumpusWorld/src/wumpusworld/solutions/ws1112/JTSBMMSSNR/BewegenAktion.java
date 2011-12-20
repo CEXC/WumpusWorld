@@ -6,6 +6,7 @@ import james.core.math.random.generators.IRandom;
 import java.util.LinkedList;
 
 import model.wumpusworld.CaveGround;
+import model.wumpusworld.Orientation;
 import model.wumpusworld.environment.CavePosition;
 import model.wumpusworld.environment.NeighbourhoodPerception;
 
@@ -36,17 +37,13 @@ public class BewegenAktion extends RegelAktion {
 					// ist das Feld betretbar? => Ziel weiterverwenden
 					if(IstFeldBetretbar(Nachbarschaft[i*2])) {
 						Aktion.Ziel = Ziel;
+						Ziel = Aktion.Ziel;
 						return Aktion;
 					}
 				}
 			}
 		}
 		// Wir muessen ein neues Ziel berechnen
-		
-		// Falls bisher nur auf einem Feld gewesen
-		CavePosition LetztePosition = Positionen.getFirst();
-		if(Positionen.size() > 1)
-			LetztePosition = Positionen.get(1);
 		// Moegliche Ziele
 		LinkedList<CavePosition> Ziele = new LinkedList<CavePosition>();
 		for(int i=0; i<4; i++) {
@@ -61,12 +58,17 @@ public class BewegenAktion extends RegelAktion {
 		// Nur ein Feld betretbar, also muessen wir dorthin
 		if(Ziele.size() == 1) {
 			Aktion.Ziel = Ziele.getFirst();
+			Ziel = Aktion.Ziel;
 			return Aktion;
 		}
 		
-		// loeschen der LetztePosition aus der Zielliste, es gibt ja neue Ziele
-		// TODO sicherstellen, dass die position auch geloescht wird, falls andere Blickrichtung!
-		Ziele.remove(LetztePosition);
+		// ggf. loeschen der LetztePosition aus der Zielliste, es gibt ja neue Ziele
+		if(Positionen.size() > 1)
+			Ziele = removePosition(Positionen.get(1), Ziele);
+		// falls wir immer noch mehr als ein Ziel haben, ggf. auch noch die VorletztePosition loeschen
+		if((Ziele.size() > 1) && (Positionen.size() > 2))
+			Ziele = removePosition(Positionen.get(2), Ziele);
+
 		// zufaellig eines der uebrigen Ziele auswaehlen
 		IRandom ZufallsZahlenGen = null;
 		ZufallsZahlenGen = SimSystem.getRNGGenerator().getNextRNG();
@@ -75,6 +77,18 @@ public class BewegenAktion extends RegelAktion {
 		// und nicht einfach wild rumdrehen
 		Ziel = Aktion.Ziel;
 		return Aktion;
+	}
+	
+	private LinkedList<CavePosition> removePosition(CavePosition Position, LinkedList<CavePosition> Liste) {
+		Position.setOrientation(Orientation.WEST);
+		Liste.remove(Position);
+		Position.setOrientation(Orientation.NORTH);
+		Liste.remove(Position);
+		Position.setOrientation(Orientation.EAST);
+		Liste.remove(Position);
+		Position.setOrientation(Orientation.SOUTH);
+		Liste.remove(Position);
+		return Liste;
 	}
 	CavePosition Ziel=null;
 }

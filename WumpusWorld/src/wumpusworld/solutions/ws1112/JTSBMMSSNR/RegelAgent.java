@@ -36,8 +36,9 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 		AktY = getCavePosition().getY();
 		Blickrichtung = getCavePosition().getOrientation();
 		Nachbarschaft = Wahrnehmung.getNeighbourHood();
-		AltePositionen.addFirst(getCavePosition());
-		if(AltePositionen.size() > 4)
+		if((AltePositionen.size() == 0) || !AltePositionen.getFirst().coordinatesEqual(getCavePosition()))
+			AltePositionen.addFirst(getCavePosition().makeCopy());
+		if(AltePositionen.size() > 3)
 			AltePositionen.removeLast();
 		
 		for(SituationsStatus Status : StatusListe) {
