@@ -31,8 +31,9 @@ public abstract class RegelAktion implements Comparable<RegelAktion> {
 	public int ZaehleGold(CaveGround[] Felder){
 		int anzahl = 0;
 		for(CaveGround feld : Felder){
-			if(feld.isFilledWithGold())
-				anzahl++;
+			if(feld != null)
+				if(feld.isFilledWithGold())
+					anzahl++;
 		}
 		return anzahl;
 	}
@@ -51,20 +52,27 @@ public abstract class RegelAktion implements Comparable<RegelAktion> {
 		return Umgebung[Richtung];
 	}
 	
-	public LinkedList<CavePosition> berechneWumpusGeruchFelder(LinkedList<CavePosition> Positionen){
+	public LinkedList<CavePosition> BerechneWumpusGeruchFelder(CavePosition Position, CaveGround[] Nachbarschaft){
 		LinkedList<CavePosition> GeruchsFelder = new LinkedList<CavePosition>();
 		// Umgebung des Agenten damit ich mit Umgebung.get(x) auf die aktuell
 		// betrachtete Umgebung zugreifen kann und mit der AgentenPosition vergleichen
 		// kann
 		LinkedList<CavePosition> Umgebung = new LinkedList<CavePosition>();
-		Umgebung.add(new CavePosition(Positionen.getFirst().getX()-1,Positionen.getFirst().getY()  ));
-		Umgebung.add(new CavePosition(Positionen.getFirst().getX()-1,Positionen.getFirst().getY()+1));
-		Umgebung.add(new CavePosition(Positionen.getFirst().getX()  ,Positionen.getFirst().getY()+1));
-		Umgebung.add(new CavePosition(Positionen.getFirst().getX()+1,Positionen.getFirst().getY()+1));
-		Umgebung.add(new CavePosition(Positionen.getFirst().getX()+1,Positionen.getFirst().getY()  ));
-		Umgebung.add(new CavePosition(Positionen.getFirst().getX()+1,Positionen.getFirst().getY()-1));
-		Umgebung.add(new CavePosition(Positionen.getFirst().getX(),  Positionen.getFirst().getY()-1));
-		Umgebung.add(new CavePosition(Positionen.getFirst().getX()-1,Positionen.getFirst().getY()-1));
+		Umgebung.add(new CavePosition(Position.getX()-1,Position.getY()  ));
+		Umgebung.add(new CavePosition(Position.getX()-1,Position.getY()+1));
+		Umgebung.add(new CavePosition(Position.getX()  ,Position.getY()+1));
+		Umgebung.add(new CavePosition(Position.getX()+1,Position.getY()+1));
+		Umgebung.add(new CavePosition(Position.getX()+1,Position.getY()  ));
+		Umgebung.add(new CavePosition(Position.getX()+1,Position.getY()-1));
+		Umgebung.add(new CavePosition(Position.getX(),  Position.getY()-1));
+		Umgebung.add(new CavePosition(Position.getX()-1,Position.getY()-1));
+		
+		for(int i=0; i<Nachbarschaft.length; i++){
+			if(Nachbarschaft[i] != null){
+				if(Nachbarschaft[i].isStench())
+					GeruchsFelder.add(Umgebung.get(i));
+			}
+		}
 		return GeruchsFelder;
 	}
 	
