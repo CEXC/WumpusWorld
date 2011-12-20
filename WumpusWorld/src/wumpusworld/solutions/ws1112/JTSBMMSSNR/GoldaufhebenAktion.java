@@ -41,10 +41,11 @@ public class GoldaufhebenAktion extends RegelAktion {
 					MomentaneAnzahl++;
 			}
 			if(MomentaneAnzahl > GroessteAnzahl){
-				if((Nachbarschaft[i*2] != null) && IstFeldBetretbar(Nachbarschaft[i*2])){
+				if(IstFeldBetretbar(Nachbarschaft[i*2])){
 					BesteRichtung = i;
+					GroessteAnzahl = MomentaneAnzahl;
 				}
-				GroessteAnzahl = MomentaneAnzahl;
+				
 			}
 		}
 		Aktion.Ziel = getZielInRichtung(Positionen.getFirst(), BesteRichtung);

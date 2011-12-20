@@ -1,5 +1,8 @@
 package wumpusworld.solutions.ws1112.JTSBMMSSNR;
 
+import james.SimSystem;
+import james.core.math.random.generators.IRandom;
+
 import java.util.LinkedList;
 
 import model.wumpusworld.CaveGround;
@@ -19,32 +22,59 @@ public class BewegenAktion extends RegelAktion {
 		// Hat noch optimierungspotential indem wir ein erreichen des Spielfeldende
 		// mit in die Zufallsberechnung mit einbeziehen
 		AgentenAktion Aktion = new AgentenAktion();
-		// Wir brauchen ja ne CavePosition fuer Aktion.Ziel
-		LinkedList<CavePosition> Umgebung = new LinkedList<CavePosition>();
-		Umgebung.add(new CavePosition(Positionen.getFirst().getX()-1,Positionen.getFirst().getY()  ));
-		Umgebung.add(new CavePosition(Positionen.getFirst().getX()  ,Positionen.getFirst().getY()+1));
-		Umgebung.add(new CavePosition(Positionen.getFirst().getX()+1,Positionen.getFirst().getY()  ));
-		Umgebung.add(new CavePosition(Positionen.getFirst().getX(),  Positionen.getFirst().getY()-1));
 		
-		// falls in allen drei moeglichen ZielCavePositionen eine Falle ist gehen wir wieder zurueck
-		if(!IstFeldBetretbar(Wahrnehmung.getNeighbourHood()[0]) || Umgebung.get(0).equals(Positionen.get(1)))
-			if(!IstFeldBetretbar(Wahrnehmung.getNeighbourHood()[1]) || Umgebung.get(1).equals(Positionen.get(1)))
-				if(!IstFeldBetretbar(Wahrnehmung.getNeighbourHood()[2]) || Umgebung.get(2).equals(Positionen.get(1)))
-					if(!IstFeldBetretbar(Wahrnehmung.getNeighbourHood()[3]) || Umgebung.get(3).equals(Positionen.get(1))){
-						Aktion.Ziel = Positionen.get(1);
+		// bisher hatten wir noch nie ein Ziel gesetzt
+		if(null == Ziel)
+			Ziel = Positionen.getFirst();
+		
+		// Es gibt ein Ziel, jetzt muessen wir herausfinden, 
+		// ob es ein aktuelles Ziel ist, oder ob wir ein neues berechnen muessen
+		if(!Ziel.coordinatesEqual(Positionen.getFirst())) {
+			// ist das Ziel ein Nachbarfeld?
+			for(int i=0; i<4; i++) {
+				if(Ziel.coordinatesEqual(getZielInRichtung(Positionen.getFirst(), i))) {
+					// ist das Feld betretbar? => Ziel weiterverwenden
+					if(IstFeldBetretbar(Nachbarschaft[i*2])) {
+						Aktion.Ziel = Ziel;
 						return Aktion;
 					}
-						
-		int Zielrichtung; //0 = West, 1 = Nord, 2 = Ost, 3 = Sued
-		// solange des Feld nicht betretbar oder die Zielrichtung gleich der CavePosition
-		// aus der wir kommen generieren wir eine Zufallsrichtung
-		do{
-			Zielrichtung = (int) Math.random()*4;
-		}while(!IstFeldBetretbar(Wahrnehmung.getNeighbourHood()[Zielrichtung*2]) || 
-				Positionen.get(1).equals(Umgebung.get(Zielrichtung)));
+				}
+			}
+		}
+		// Wir muessen ein neues Ziel berechnen
 		
-		Aktion.Ziel = Umgebung.get(Zielrichtung);
+		// Falls bisher nur auf einem Feld gewesen
+		CavePosition LetztePosition = Positionen.getFirst();
+		if(Positionen.size() > 1)
+			LetztePosition = Positionen.get(1);
+		// Moegliche Ziele
+		LinkedList<CavePosition> Ziele = new LinkedList<CavePosition>();
+		for(int i=0; i<4; i++) {
+			if(IstFeldBetretbar(Nachbarschaft[i*2]))
+					Ziele.add(getZielInRichtung(Positionen.getFirst(), i));
+		}
+		
+		// kein Zielfeld?
+		if(Ziele.size() == 0)
+			return null;
+		
+		// Nur ein Feld betretbar, also muessen wir dorthin
+		if(Ziele.size() == 1) {
+			Aktion.Ziel = Ziele.getFirst();
+			return Aktion;
+		}
+		
+		// loeschen der LetztePosition aus der Zielliste, es gibt ja neue Ziele
+		// TODO sicherstellen, dass die position auch geloescht wird, falls andere Blickrichtung!
+		Ziele.remove(LetztePosition);
+		// zufaellig eines der uebrigen Ziele auswaehlen
+		IRandom ZufallsZahlenGen = null;
+		ZufallsZahlenGen = SimSystem.getRNGGenerator().getNextRNG();
+		Aktion.Ziel = Ziele.get(ZufallsZahlenGen.nextInt(Ziele.size()));
+		// Ziel in Speicher packen, damit wir uns auch beim naechsten Aufruf dorthin bewegen
+		// und nicht einfach wild rumdrehen
+		Ziel = Aktion.Ziel;
 		return Aktion;
 	}
-
+	CavePosition Ziel=null;
 }
