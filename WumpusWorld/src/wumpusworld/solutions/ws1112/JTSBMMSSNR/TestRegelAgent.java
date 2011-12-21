@@ -55,28 +55,42 @@ public class TestRegelAgent {
 	    
 	    Regel R = new Regel();
     
-	    
+	    R.resetStatusListe();
+	    R.resetAktionenListe();
 	    R.addStatus(new GoldGesehen(true));
-	    R.addAktion(new GoldaufhebenAktion(100));
-	    R.setPrioritaet(70);
+	    R.addAktion(new GoldaufhebenAktion(200));
+	//    R.setPrioritaet(200);
 	    Regeln.add(new Regel(R));
 	    
 	    
-	   /*R.addStatus(new WumpusGerochen(true));
-	    R.addAktion(new FliehenAktion(100));
-	    R.setPrioritaet(200);
-	    Regeln.add(new Regel(R));
 	    
+	    /*
 	    R.addStatus(new WumpusVoraus(true));
 	    R.addAktion(new PfeilabschiessenAktion(100));
 	    R.setPrioritaet(400);
-	    Regeln.add(new Regel(R));*/
+	    Regeln.add(new Regel(R));
+	    */
+	    R.resetStatusListe();
+	    R.resetAktionenListe();
+	    R.addStatus(new RandGesehen(true));
+	    R.addAktion(new BewegenAktion(190));
+	  //  R.setPrioritaet(300);
+	    Regeln.add(new Regel(R));
 	    
 	    R.resetStatusListe();
 	    R.resetAktionenListe();
+	    R.resetStatusListe();
+	    R.resetAktionenListe();
 	    R.addStatus(new NichtsFestgestellt(true));
-	    R.addAktion(new BewegenAktion(100));
-	    R.setPrioritaet(10);
+	    R.addAktion(new BewegenAktion(60));
+	   // R.setPrioritaet(10);
+	    Regeln.add(new Regel(R));
+	    
+	    R.resetStatusListe();
+	    R.resetAktionenListe();
+	    R.addStatus(new WumpusGerochen(true));
+	    R.addAktion(new FliehenAktion(500));
+	 //  R.setPrioritaet(300);
 	    Regeln.add(new Regel(R));
 	    
 	    for(int i=0; i<AnzahlSimulationen; i++) {
@@ -90,9 +104,10 @@ public class TestRegelAgent {
 		    Regeler.addSituationsStatus(new GoldGesehen());
 		    Regeler.addSituationsStatus(new Gefangen());
 		    Regeler.addSituationsStatus(new NichtsFestgestellt());
+		    Regeler.addSituationsStatus(new RandGesehen());
 		    Regeler.addRegeln(Regeln);
 		    try {
-		    	Ergebnis = ExerciseUtils.exerciseTwo(Regeler, Visualisierung, PauseZwSchritten);
+		    	Ergebnis = ExerciseUtils.exerciseTwo(Regeler, true, 200L);
 		    	BesuchteFelder = Regeler.getBesuchteFelder();
 		    }
 		    catch (Throwable t) {

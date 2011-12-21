@@ -27,10 +27,11 @@ public class GoldaufhebenAktion extends RegelAktion {
 			return Aktion;
 		}
 		// Es gibt kein Gold in unserer Umgebung, also koennen wir auch keines Aufheben
-		if(ZaehleGold(Wahrnehmung.getNeighbourHood()) == 0){
+		if(ZaehleGold(Nachbarschaft) == 0){
 			return null;
 		}
-		int BesteRichtung=0; // West=0, Nord=1, Ost=2, Sued=3
+		int BesteRichtung=-1; // West=0, Nord=1, Ost=2, Sued=3; am Anfang noch keine Richtung berechnet
+		int AusweichRichtung=0; // Falls das Goldstueck nicht erreichbar ist
 		// Anzahl der jeweiligen Goldstuecke in der jeweiligen Himmelsrichtung
 		int MomentaneAnzahl=0,GroessteAnzahl=0; 
 		// Zwischenspeicher als Vereinfachung
@@ -40,13 +41,16 @@ public class GoldaufhebenAktion extends RegelAktion {
 				if((Nachbarschaft[(7+i*2+y)%8] != null) && Nachbarschaft[(7+i*2+y)%8].isFilledWithGold())
 					MomentaneAnzahl++;
 			}
-			if(MomentaneAnzahl > GroessteAnzahl){
-				if(IstFeldBetretbar(Nachbarschaft[i*2])){
+			if(MomentaneAnzahl >= GroessteAnzahl && IstFeldBetretbar(Nachbarschaft[i*2])){
 					BesteRichtung = i;
 					GroessteAnzahl = MomentaneAnzahl;
-				}		
 			}
+			if(IstFeldBetretbar(Nachbarschaft[i*2]))
+				AusweichRichtung = i;
 		}
+		// Leider versprerrt uns eine Falle den weg
+		if(BesteRichtung == -1)
+			BesteRichtung = AusweichRichtung;
 		Aktion.Ziel = getZielInRichtung(Positionen.getFirst(), BesteRichtung);
 		return Aktion;
 	}
