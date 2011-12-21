@@ -2,8 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/James2_Wumpus"/>
-	<classpathentry kind="lib" path="src/core-0.8.5-20111118.115756-220.jar" sourcepath="misc/core-0.8.5-20111118.115756-220-sources.jar"/>
-	<classpathentry kind="lib" path="src/wumpus-0.8.5-SNAPSHOT.jar" sourcepath="misc/wumpus-0.8.5-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/wumpus"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

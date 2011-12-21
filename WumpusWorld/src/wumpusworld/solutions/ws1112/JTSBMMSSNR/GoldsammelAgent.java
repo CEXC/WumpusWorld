@@ -7,15 +7,10 @@ import model.wumpusworld.agents.CompleteCavePerceivingAgent;
 import model.wumpusworld.environment.Cave;
 import model.wumpusworld.environment.CompleteCavePerception;
 
-import james.SimSystem;
-import james.core.math.random.generators.IRandom;
 import james.core.util.eventset.Entry;
 import james.core.util.eventset.SimpleEventQueue;
 import james.core.util.misc.Pair;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 // Ich musste hier die java.util.LinkedList nehmen,
 // weil die James LinkedList nicht mit verschachtelten LinkedLists
@@ -39,7 +34,7 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 	// Muessen die Berechnungen bei bekanntwerden der Hoehle noch gemacht werden?
 	// Liste aller Goldklumpen usw. erstellen
 	boolean Initialisiert=false;
-	IRandom ZufallsZahlenGen = null;
+	//IRandom ZufallsZahlenGen = null;
 	LinkedList<Pair<Integer, Integer>> RestlicheGoldklumpen = new LinkedList<Pair<Integer, Integer>>();
 	LinkedList<LinkedList<Wegpunkt>> WegeZumGold = new LinkedList<LinkedList<Wegpunkt>>();
 	//LinkedList<Wegpunkt> WegZumGold = new LinkedList<Wegpunkt>();
@@ -134,7 +129,6 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 		if(Startpunkt.istZiel(Zielpunkt))
 			{
 			LinkedList<Wegpunkt> Weg = new LinkedList<Wegpunkt>();
-			Weg.add(new Wegpunkt(Start, 0));
 			return Weg;
 			}
 		
@@ -298,12 +292,30 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 			((Orientation.EAST == Blickrichtung) && (Orientation.NORTH == Zielrichtung)) )
 			Aktion = AgentAction.TURN_LEFT;
 	
-		// Update des aktuellen Status
+		/*// Update des aktuellen Status
 		if(AgentAction.TURN_RIGHT == Aktion)
 			Blickrichtung = Blickrichtung.turnRight();
 		else if(AgentAction.TURN_LEFT == Aktion)
-			Blickrichtung = Blickrichtung.turnLeft();
+			Blickrichtung = Blickrichtung.turnLeft();*/
 		return Aktion;
+	}
+	
+	private int getNaechstenGoldklumpen() {
+		// Fehler keine Goldklumpen oder keine Wege
+		if(RestlicheGoldklumpen.isEmpty() || WegeZumGold.isEmpty())
+			return -1;
+		// alle Wege durchlaufen, Index und Laenge des Kuerzesten merken
+		// So lang kann kein Weg sein
+		int MinLaenge = 999999999;
+		// und einen Index von -1 gibt es auch nicht
+		int Index = -1;
+		for(int i=0; i<WegeZumGold.size(); i++) {
+			if(WegeZumGold.get(i).size() < MinLaenge) {
+				MinLaenge= WegeZumGold.get(i).size();
+				Index = i;
+			}
+		}
+		return Index;
 	}
 	
 	@Override
@@ -311,8 +323,8 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 		// Update des aktuellen Status
 		AktX = Wahrnehmung.getXPosition();
 		AktY = Wahrnehmung.getYPosition();
+		Blickrichtung = getCavePosition().getOrientation();
 		if(!Initialisiert) {
-			ZufallsZahlenGen = SimSystem.getRNGGenerator().getNextRNG();
 			// Fuege alle Goldklumpenpositionen zur Goldklumpen Liste hinzu
 			erstelleGoldklumpenListe(Wahrnehmung.getCave());
 			Initialisiert = true;
@@ -331,13 +343,14 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 			if(RestlicheGoldklumpen.isEmpty()) {
 				return AgentAction.WAIT;
 			}
-			// Waehle zufaellig einen davon aus
-			AktGoldklumpenIndex = ZufallsZahlenGen.nextInt(RestlicheGoldklumpen.size());
+			// Waehle den nahesten Goldklumpen aus
+			AktGoldklumpenIndex = getNaechstenGoldklumpen();
 			}
 		
 		// Wir sind auf dem Weg zum naechsten Goldklumpen.
 		// Sind wir auf dem aktuellen Wegpunkt?
-		if(//!WegeZumGold.isEmpty() && WegeZumGold.size() > AktGoldklumpenIndex &&
+		if(AktGoldklumpenIndex != -1 &&
+				!WegeZumGold.isEmpty() && !WegeZumGold.get(AktGoldklumpenIndex).isEmpty() &&
 				(WegeZumGold.get(AktGoldklumpenIndex).getFirst().getKoordinaten().getFirstValue() == AktX) && 
 				(WegeZumGold.get(AktGoldklumpenIndex).getFirst().getKoordinaten().getSecondValue() == AktY)) 
 			WegeZumGold.get(AktGoldklumpenIndex).removeFirst();
