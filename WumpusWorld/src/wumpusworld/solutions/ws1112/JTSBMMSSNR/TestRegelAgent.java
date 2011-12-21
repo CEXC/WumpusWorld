@@ -80,8 +80,6 @@ public class TestRegelAgent {
 	    
 	    R.resetStatusListe();
 	    R.resetAktionenListe();
-	    R.resetStatusListe();
-	    R.resetAktionenListe();
 	    R.addStatus(new NichtsFestgestellt(true));
 	    R.addAktion(new BewegenAktion(60));
 	   // R.setPrioritaet(10);
