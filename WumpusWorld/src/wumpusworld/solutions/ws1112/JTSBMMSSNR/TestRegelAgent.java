@@ -69,13 +69,14 @@ public class TestRegelAgent {
 	    R.addAktion(new PfeilabschiessenAktion(100));
 	    R.setPrioritaet(400);
 	    Regeln.add(new Regel(R));
+	    */
 	    
 	    R.resetStatusListe();
 	    R.resetAktionenListe();
 	    R.addStatus(new RandGesehen(true));
 	    R.addAktion(new BewegenAktion(190));
 	  //  R.setPrioritaet(300);
-	    Regeln.add(new Regel(R));*/
+	    Regeln.add(new Regel(R));
 	    
 	    R.resetStatusListe();
 	    R.resetAktionenListe();
@@ -104,7 +105,7 @@ public class TestRegelAgent {
 		    Regeler.addSituationsStatus(new GoldGesehen());
 		    Regeler.addSituationsStatus(new Gefangen());
 		    Regeler.addSituationsStatus(new NichtsFestgestellt());
-		    //Regeler.addSituationsStatus(new RandGesehen());
+		    Regeler.addSituationsStatus(new RandGesehen());
 		    Regeler.addRegeln(Regeln);
 		    try {
 		    	Ergebnis = ExerciseUtils.exerciseTwo(Regeler, true, 200L);
