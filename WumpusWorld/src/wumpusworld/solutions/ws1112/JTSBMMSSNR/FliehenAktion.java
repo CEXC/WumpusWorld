@@ -22,12 +22,7 @@ public class FliehenAktion extends RegelAktion {
 		AgentenAktion Aktion = new AgentenAktion();
 		
 		LinkedList<CavePosition> GeruchsFelder = BerechneWumpusGeruchFelder(Positionen.getFirst(), Nachbarschaft);
-		
-		for(int i=0; i < GeruchsFelder.size(); i++){
-			System.out.println(GeruchsFelder.get(i).toString());
-		}
-		System.out.println("Ende");
-		
+
 		if(GeruchsFelder.size() == 0) // Wumpus wurde nirgends gerochen
 			return null; // Fehlerfall, eigentlich sollte dieser Zweig nicht auftreten
 		if(GeruchsFelder.size() >= 8){ // Wumpus ueberall gerochen
@@ -67,10 +62,6 @@ public class FliehenAktion extends RegelAktion {
 				}
 			}
 		}
-		for(int i=0; i<GroessteFreieFeldreihe.size();i++){
-			System.out.println(GroessteFreieFeldreihe.get(i).toString());
-		}
-		System.out.println("Ende");
 		
 		// keine Moeglichkeit zur Flucht gefunden
 		if(GroessteFreieFeldreihe.size()==0){
@@ -85,7 +76,7 @@ public class FliehenAktion extends RegelAktion {
 				GroessteFreieFeldreihe.get(0).equals(Umgebung.get(7))) &&
 				GroessteFreieFeldreihe.size() < 2){
 			Aktion.Ziel = Positionen.getFirst();
-			return Aktion; // RegalAktion WAIT
+			return Aktion; // RegelAktion WAIT
 		}
 		perfektes_Fluchtfeld = GroessteFreieFeldreihe.get(GroessteFreieFeldreihe.size()-1 >> 1); // wie /2 aber mit abrunden ;)
 

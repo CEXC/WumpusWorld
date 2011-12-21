@@ -30,7 +30,8 @@ public class GoldaufhebenAktion extends RegelAktion {
 		if(ZaehleGold(Wahrnehmung.getNeighbourHood()) == 0){
 			return null;
 		}
-		int BesteRichtung=0; // West=0, Nord=1, Ost=2, Sued=3
+		int BesteRichtung=-1; // West=0, Nord=1, Ost=2, Sued=3; am Anfang noch nicht festgelegt!
+		int AusweichRichtung=0; // Falls der Weg von Fallen versperrt wiird
 		// Anzahl der jeweiligen Goldstuecke in der jeweiligen Himmelsrichtung
 		int MomentaneAnzahl=0,GroessteAnzahl=0; 
 		// Zwischenspeicher als Vereinfachung
@@ -46,7 +47,11 @@ public class GoldaufhebenAktion extends RegelAktion {
 					GroessteAnzahl = MomentaneAnzahl;
 				}		
 			}
+			if(IstFeldBetretbar(Nachbarschaft[i*2]))
+				AusweichRichtung = i;
 		}
+		if(BesteRichtung == -1)
+			BesteRichtung = AusweichRichtung;
 		Aktion.Ziel = getZielInRichtung(Positionen.getFirst(), BesteRichtung);
 		return Aktion;
 	}
