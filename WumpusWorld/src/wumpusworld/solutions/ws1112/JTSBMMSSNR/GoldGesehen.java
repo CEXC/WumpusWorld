@@ -9,12 +9,22 @@ import model.wumpusworld.environment.NeighbourhoodPerception;
 public class GoldGesehen extends SituationsStatus {
 	@Override
 	public void updateStatus(LinkedList<CavePosition> Positionen,
+<<<<<<< HEAD
 			CaveGround[] Nachbarschaft, NeighbourhoodPerception Wahrnehmung) {
+=======
+								CaveGround[] Nachbarschaft, 
+								NeighbourhoodPerception Wahrnehmung) {
+>>>>>>> master
 		Anzutreffen = false;
 		for(CaveGround Feld : Nachbarschaft) {
 			if((Feld != null) && Feld.isFilledWithGold())
 				Anzutreffen = true;
 		}
+<<<<<<< HEAD
+=======
+		if(Wahrnehmung.getCurrentCaveGround().isFilledWithGold())
+			Anzutreffen = true;
+>>>>>>> master
 	}
 	
 	public GoldGesehen(boolean Anzutreffen) {

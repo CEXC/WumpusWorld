@@ -9,7 +9,12 @@ import model.wumpusworld.environment.NeighbourhoodPerception;
 public abstract class SituationsStatus {
 	boolean Anzutreffen = false;
 	final SituationsStatusID ID;
+<<<<<<< HEAD
 	public abstract void updateStatus(LinkedList<CavePosition> Positionen, CaveGround Nachbarschaft[], 
+=======
+	public abstract void updateStatus(LinkedList<CavePosition> Positionen, 
+										CaveGround Nachbarschaft[], 
+>>>>>>> master
 										NeighbourhoodPerception Wahrnehmung);
 	
 	public SituationsStatus(SituationsStatusID ID, boolean Anzutreffen) {

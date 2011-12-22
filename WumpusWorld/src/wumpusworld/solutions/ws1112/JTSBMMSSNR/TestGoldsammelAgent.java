@@ -80,9 +80,15 @@ public class TestGoldsammelAgent {
 		    catch (Throwable t) {
 		    	t.printStackTrace();
 		    }	    
+<<<<<<< HEAD
 		    SimSystem.report(Level.INFO, "Ergebnis des Agenten: " + Ergebnis);
 		    SimSystem.report(Level.INFO, "Besuchte Felder: " + BesuchteFelder);
 		    SimSystem.report(Level.INFO, "Expandierte Knoten: " + ExpandierteKnoten);
+=======
+		    SimSystem.report(Level.SEVERE, "Ergebnis des Agenten: " + Ergebnis);
+		    SimSystem.report(Level.SEVERE, "Besuchte Felder: " + BesuchteFelder);
+		    SimSystem.report(Level.SEVERE, "Expandierte Knoten: " + ExpandierteKnoten);
+>>>>>>> master
 		    GesamtErgebnis += Ergebnis;
 		    GesamtBesuchteFelder += BesuchteFelder;
 		    GesamtExpandierteKnoten += ExpandierteKnoten;

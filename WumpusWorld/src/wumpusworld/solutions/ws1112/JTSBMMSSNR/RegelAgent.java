@@ -36,8 +36,14 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 		AktY = getCavePosition().getY();
 		Blickrichtung = getCavePosition().getOrientation();
 		Nachbarschaft = Wahrnehmung.getNeighbourHood();
+<<<<<<< HEAD
 		AltePositionen.addFirst(getCavePosition());
 		if(AltePositionen.size() > 4)
+=======
+		if((AltePositionen.size() == 0) || !AltePositionen.getFirst().coordinatesEqual(getCavePosition()))
+			AltePositionen.addFirst(getCavePosition().makeCopy());
+		if(AltePositionen.size() > 3)
+>>>>>>> master
 			AltePositionen.removeLast();
 		
 		for(SituationsStatus Status : StatusListe) {
@@ -49,7 +55,12 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 		for(Regel NR : Regeln) {
 			if(NR.IstRegelAnwendbar(StatusListe)) {
 				// Regel anwenden
+<<<<<<< HEAD
 				AgentAction Aktion = AktionAusfuehren(NR.berechneRegelAktion(Wahrnehmung, AltePositionen));
+=======
+				AgentAction Aktion = AktionAusfuehren(NR.berechneRegelAktion(Wahrnehmung, AltePositionen,
+														StatusListe));
+>>>>>>> master
 				if(Aktion == AgentAction.GO)
 					BesuchteFelder++;
 				return Aktion;
@@ -58,7 +69,11 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 		return AgentAction.WAIT;
 	}
 	
+<<<<<<< HEAD
 	protected AgentAction AktionAusfuehren(RegelAktion Aktion) {
+=======
+	protected AgentAction AktionAusfuehren(AgentenAktion Aktion) {
+>>>>>>> master
 		if(Aktion.PfeilAbschiessen)
 			return AgentAction.SHOOT_ARROW;
 		if(Aktion.GoldAufheben)

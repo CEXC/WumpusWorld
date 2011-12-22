@@ -41,6 +41,14 @@ public class TestRegelAgent {
 	    	else if(args[i].startsWith("H") && args[i].endsWith("I") && args[i].length() > 2) {
 	    		AnzahlSimulationen = Integer.parseInt(args[i].substring(1,args[i].length()-1));
 	    	}
+<<<<<<< HEAD
+=======
+	    	else if(args[i].startsWith("R") && args[i].endsWith("L") && args[i].length() > 2) {
+	    		NeuesSeed = Long.parseLong(args[i].substring(1,args[i].length()-1));
+	    		SimSystem.getRNGGenerator().setSeed(NeuesSeed);
+	    		SeedErhalten = true;
+	    	}
+>>>>>>> master
 	    }
 	    
 	    int GesamtErgebnis = 0;
@@ -52,6 +60,7 @@ public class TestRegelAgent {
     
 	    
 	    R.addStatus(new GoldGesehen(true));
+<<<<<<< HEAD
 	    R.setGoldklumpenAufheben(true);
 	    R.setPrioritaet(70);
 	    Regeln.add(new Regel(R));
@@ -71,6 +80,30 @@ public class TestRegelAgent {
 	    R.setPrioritaet(10);
 	    Regeln.add(new Regel(R));*/
 	    
+=======
+	    R.addAktion(new GoldaufhebenAktion(100));
+	    R.setPrioritaet(70);
+	    Regeln.add(new Regel(R));
+	    
+	    
+	   /*R.addStatus(new WumpusGerochen(true));
+	    R.addAktion(new FliehenAktion(100));
+	    R.setPrioritaet(200);
+	    Regeln.add(new Regel(R));
+	    
+	    R.addStatus(new WumpusVoraus(true));
+	    R.addAktion(new PfeilabschiessenAktion(100));
+	    R.setPrioritaet(400);
+	    Regeln.add(new Regel(R));*/
+	    
+	    R.resetStatusListe();
+	    R.resetAktionenListe();
+	    R.addStatus(new NichtsFestgestellt(true));
+	    R.addAktion(new BewegenAktion(100));
+	    R.setPrioritaet(10);
+	    Regeln.add(new Regel(R));
+	    
+>>>>>>> master
 	    for(int i=0; i<AnzahlSimulationen; i++) {
 			int Ergebnis = 0;
 			int BesuchteFelder = 0;

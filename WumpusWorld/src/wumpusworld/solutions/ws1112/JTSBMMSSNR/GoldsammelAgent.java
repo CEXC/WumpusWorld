@@ -7,8 +7,11 @@ import model.wumpusworld.agents.CompleteCavePerceivingAgent;
 import model.wumpusworld.environment.Cave;
 import model.wumpusworld.environment.CompleteCavePerception;
 
+<<<<<<< HEAD
 import james.SimSystem;
 import james.core.math.random.generators.IRandom;
+=======
+>>>>>>> master
 import james.core.util.eventset.Entry;
 import james.core.util.eventset.SimpleEventQueue;
 import james.core.util.misc.Pair;
@@ -36,7 +39,11 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 	// Muessen die Berechnungen bei bekanntwerden der Hoehle noch gemacht werden?
 	// Liste aller Goldklumpen usw. erstellen
 	boolean Initialisiert=false;
+<<<<<<< HEAD
 	IRandom ZufallsZahlenGen = null;
+=======
+	//IRandom ZufallsZahlenGen = null;
+>>>>>>> master
 	LinkedList<Pair<Integer, Integer>> RestlicheGoldklumpen = new LinkedList<Pair<Integer, Integer>>();
 	LinkedList<LinkedList<Wegpunkt>> WegeZumGold = new LinkedList<LinkedList<Wegpunkt>>();
 	//LinkedList<Wegpunkt> WegZumGold = new LinkedList<Wegpunkt>();
@@ -327,7 +334,10 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 		AktY = Wahrnehmung.getYPosition();
 		Blickrichtung = getCavePosition().getOrientation();
 		if(!Initialisiert) {
+<<<<<<< HEAD
 			ZufallsZahlenGen = SimSystem.getRNGGenerator().getNextRNG();
+=======
+>>>>>>> master
 			// Fuege alle Goldklumpenpositionen zur Goldklumpen Liste hinzu
 			erstelleGoldklumpenListe(Wahrnehmung.getCave());
 			Initialisiert = true;
