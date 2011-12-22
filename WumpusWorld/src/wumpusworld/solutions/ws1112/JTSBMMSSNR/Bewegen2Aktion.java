@@ -21,8 +21,7 @@ public class Bewegen2Aktion extends RegelAktion {
 			CaveGround[] Nachbarschaft, NeighbourhoodPerception Wahrnehmung,
 			LinkedList<SituationsStatus> StatusListe, Orientation Blickrichtung,
 			RegelAgent Agent) {
-		// Hat noch optimierungspotential indem wir ein erreichen des Spielfeldende
-		// mit in die Zufallsberechnung mit einbeziehen
+		// Hier wird das erreichen eines Spielfel
 		AgentenAktion Aktion = new AgentenAktion();
 		
 		// bisher hatten wir noch nie ein Ziel gesetzt
@@ -77,7 +76,7 @@ public class Bewegen2Aktion extends RegelAktion {
 		
 		// wenn wir zufaellig die Richtung wuerfeln in der der Agent eine Kante gemerkt hatte wuerfeln
 		// wir einfach nochmal. Das erreichen des Randes wird resettet falls die Seite gegenueber erreicht wurde
-		int x=2; // Anzahl der nochmal wuerfeln
+		int x=1; // Anzahl der nochmal wuerfeln
 		do{
 			Aktion.Ziel = Ziele.get(ZufallsZahlenGen.nextInt(Ziele.size()));
 			for(int i=0; i<4; i++){
