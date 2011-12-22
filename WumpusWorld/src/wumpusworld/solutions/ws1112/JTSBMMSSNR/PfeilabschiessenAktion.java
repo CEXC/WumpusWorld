@@ -16,7 +16,8 @@ public class PfeilabschiessenAktion extends RegelAktion {
 	@Override
 	public AgentenAktion berechneAktion(LinkedList<CavePosition> Positionen,
 			CaveGround[] Nachbarschaft, NeighbourhoodPerception Wahrnehmung,
-			LinkedList<SituationsStatus> StatusListe, Orientation Blickrichtung) {
+			LinkedList<SituationsStatus> StatusListe, Orientation Blickrichtung,
+			RegelAgent Agent) {
 		return null;
 	}
 

@@ -27,6 +27,8 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 	CaveGround Nachbarschaft[];
 	// speichere die letzten drei Positionen + die aktuelle um nicht immer hin und her zu laufen
 	LinkedList<CavePosition> AltePositionen = new LinkedList<CavePosition>();
+	// speicher erreichen des Randes West = 0, Nord = 1, Ost = 2, Sued = 3
+	boolean Kante[] = {false, false, false, false};
 	
 	@Override
 	protected AgentAction act(NeighbourhoodPerception Wahrnehmung) {
@@ -36,6 +38,10 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 		AktY = getCavePosition().getY();
 		Blickrichtung = getCavePosition().getOrientation();
 		Nachbarschaft = Wahrnehmung.getNeighbourHood();
+		for(int i=0; i<4; i++){
+			if(Nachbarschaft[i*2]==null)
+				Kante[i] = true;
+		}
 		if((AltePositionen.size() == 0) || !AltePositionen.getFirst().coordinatesEqual(getCavePosition()))
 			AltePositionen.addFirst(getCavePosition().makeCopy());
 		if(AltePositionen.size() > 3)
@@ -51,7 +57,7 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 			if(NR.IstRegelAnwendbar(StatusListe)) {
 				// Regel anwenden
 				AgentAction Aktion = AktionAusfuehren(NR.berechneRegelAktion(Wahrnehmung, AltePositionen,
-														StatusListe, Blickrichtung));
+														StatusListe, Blickrichtung, this));
 				if(Aktion == AgentAction.GO)
 					BesuchteFelder++;
 				return Aktion;

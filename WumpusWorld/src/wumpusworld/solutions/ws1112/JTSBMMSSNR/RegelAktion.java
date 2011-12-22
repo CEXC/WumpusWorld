@@ -20,7 +20,8 @@ public abstract class RegelAktion implements Comparable<RegelAktion> {
 												 CaveGround Nachbarschaft[], 
 												 NeighbourhoodPerception Wahrnehmung, 
 												 LinkedList<SituationsStatus> StatusListe,
-												 Orientation Blickrichtung);
+												 Orientation Blickrichtung,
+												 RegelAgent Agent);
 
 	protected boolean IstFeldBetretbar(CaveGround Feld) {
 		if(Feld == null)
@@ -42,8 +43,6 @@ public abstract class RegelAktion implements Comparable<RegelAktion> {
 	// Richtung 0=West, 1=Nord, 2=Ost, 3=Sued
 	public boolean GucktInZielrichtung(CavePosition AgentPosition, CavePosition Ziel, Orientation Blickrichtung){
 		// ungueltiges Ziel oder ungueltige AgentPosition
-		System.out.println("Aget:" + AgentPosition.toString() + "Blickrichtung:" + Blickrichtung.toString()
-				+ "Ziel:" + Ziel.toString());
 		if(Ziel == null || AgentPosition == null)
 			return false;
 		if(Blickrichtung == Orientation.NORTH)

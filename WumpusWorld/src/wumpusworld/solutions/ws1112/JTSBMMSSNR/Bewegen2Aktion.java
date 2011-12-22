@@ -10,9 +10,9 @@ import model.wumpusworld.Orientation;
 import model.wumpusworld.environment.CavePosition;
 import model.wumpusworld.environment.NeighbourhoodPerception;
 
-public class BewegenAktion extends RegelAktion {
+public class Bewegen2Aktion extends RegelAktion {
 
-	public BewegenAktion(int Prioritaet) {
+	public Bewegen2Aktion(int Prioritaet) {
 		super(RegelAktionID.BEWEGEN, Prioritaet);
 	}
 
@@ -69,11 +69,26 @@ public class BewegenAktion extends RegelAktion {
 		// falls wir immer noch mehr als ein Ziel haben, ggf. auch noch die VorletztePosition loeschen
 		if((Ziele.size() > 1) && (Positionen.size() > 2))
 			Ziele = removePosition(Positionen.get(2), Ziele);
-
+		
+		
 		// zufaellig eines der uebrigen Ziele auswaehlen
 		IRandom ZufallsZahlenGen = null;
 		ZufallsZahlenGen = SimSystem.getRNGGenerator().getNextRNG();
-		Aktion.Ziel = Ziele.get(ZufallsZahlenGen.nextInt(Ziele.size()));
+		
+		// wenn wir zufaellig die Richtung wuerfeln in der der Agent eine Kante gemerkt hatte wuerfeln
+		// wir einfach nochmal. Das erreichen des Randes wird resettet falls die Seite gegenueber erreicht wurde
+		int x=2; // Anzahl der nochmal wuerfeln
+		do{
+			Aktion.Ziel = Ziele.get(ZufallsZahlenGen.nextInt(Ziele.size()));
+			for(int i=0; i<4; i++){
+				if(Aktion.Ziel.coordinatesEqual(getZielInRichtung(Positionen.getFirst(), i)) && !Agent.Kante[i]){
+					x = 0; // wir haben ein Ziel gewuerfelt was nicht in Richtung der erreichten Kante liegt
+					break;
+				}
+			}
+			x--;
+		}while(x >= 0);	
+		
 		// Ziel in Speicher packen, damit wir uns auch beim naechsten Aufruf dorthin bewegen
 		// und nicht einfach wild rumdrehen
 		Ziel = Aktion.Ziel;

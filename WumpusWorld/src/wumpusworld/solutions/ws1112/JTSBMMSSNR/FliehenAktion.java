@@ -16,7 +16,8 @@ public class FliehenAktion extends RegelAktion {
 	@Override
 	public AgentenAktion berechneAktion(LinkedList<CavePosition> Positionen,
 			CaveGround[] Nachbarschaft, NeighbourhoodPerception Wahrnehmung,
-			LinkedList<SituationsStatus> StatusListe, Orientation Blickrichtung) {
+			LinkedList<SituationsStatus> StatusListe, Orientation Blickrichtung,
+			RegelAgent Agent) {
 		// Da wir auf die aktuelle Umgebung nur mit CaveGround zugreifen koennen
 		// muessen wir auch bei aktuellen CavePosition die Nachbarfelder relativ
 		// halten sprich West=0, Nordwest=1, Norden =2 ...

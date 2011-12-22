@@ -17,7 +17,8 @@ public class JagenAktion extends RegelAktion {
 	@Override
 	public AgentenAktion berechneAktion(LinkedList<CavePosition> Positionen,
 			CaveGround[] Nachbarschaft, NeighbourhoodPerception Wahrnehmung,
-			LinkedList<SituationsStatus> StatusListe, Orientation Blickrichtung) {
+			LinkedList<SituationsStatus> StatusListe, Orientation Blickrichtung,
+			RegelAgent Agent) {
 		AgentenAktion Aktion = new AgentenAktion();
 		CavePosition Ziel = Positionen.getFirst(); // Falls wir keine guenstige Position kriegen lauern wir
 		LinkedList<CavePosition> GeruchsFelder = BerechneWumpusGeruchFelder(Positionen.getFirst(), Nachbarschaft);

@@ -30,14 +30,15 @@ public class Regel implements Comparable<Regel> {
 	public AgentenAktion berechneRegelAktion(NeighbourhoodPerception Wahrnehmung, 
 											LinkedList<CavePosition> Positionen,
 											LinkedList<SituationsStatus> AgentenStatusListe,
-											Orientation Blickrichtung) {
+											Orientation Blickrichtung,
+											RegelAgent Agent) {
 		this.Wahrnehmung = Wahrnehmung;
 		this.Positionen = Positionen;
 		this.Blickrichtung = Blickrichtung;
 		
 		Aktion = null;
 		for(RegelAktion RA : AktionenListe) {
-			Aktion = RA.berechneAktion(Positionen, Wahrnehmung.getNeighbourHood(), Wahrnehmung, AgentenStatusListe, Blickrichtung);
+			Aktion = RA.berechneAktion(Positionen, Wahrnehmung.getNeighbourHood(), Wahrnehmung, AgentenStatusListe, Blickrichtung, Agent);
 			if(Aktion != null)
 				break;
 		}

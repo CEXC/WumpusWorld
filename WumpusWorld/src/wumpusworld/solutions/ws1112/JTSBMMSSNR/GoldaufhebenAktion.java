@@ -18,7 +18,8 @@ public class GoldaufhebenAktion extends RegelAktion {
 										CaveGround[] Nachbarschaft, 
 										NeighbourhoodPerception Wahrnehmung,
 										LinkedList<SituationsStatus> StatusListe,
-										Orientation Blickrichtung) {
+										Orientation Blickrichtung,
+										RegelAgent Agent) {
 		// Falls wir schon auf einem Goldfeld stehen wird dieses aufgehoben
 		// Ansonsten gehen wir zu den meisten Goldstuecken
 		// bei himmelsrichtung ist [0] = West, [1] = Nord, [2] = Ost, [3] = Sued
