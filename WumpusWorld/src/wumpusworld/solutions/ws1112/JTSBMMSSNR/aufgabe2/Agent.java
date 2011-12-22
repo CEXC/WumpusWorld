@@ -20,7 +20,7 @@ public class Agent extends NeighbourhoodPerceivingAgent{
 		Blickrichtung = Orientation.NORTH;
 		automat = new AgentZustand();
 		zustand = 0; // wir starten natuerlich im Zustand 0
-		ziel_Feld = 8; // Feld wo der Agent drauf steht
+		ziel_Feld = 8; // Feld wo der Agent drauf steht.
 	}
 	public int getZustand() {
 		return zustand;
