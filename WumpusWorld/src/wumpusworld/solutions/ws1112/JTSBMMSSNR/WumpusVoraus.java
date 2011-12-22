@@ -22,8 +22,7 @@ import model.wumpusworld.environment.NeighbourhoodPerception;
 public class WumpusVoraus extends SituationsStatus {
 	@Override
 	public void updateStatus(LinkedList<CavePosition> Positionen,
-			CaveGround[] Nachbarschaft, NeighbourhoodPerception Wahrnehmung) {
-		Orientation Blickrichtung = Positionen.getFirst().getOrientation();	
+			CaveGround[] Nachbarschaft, NeighbourhoodPerception Wahrnehmung, Orientation Blickrichtung) {
 		Anzutreffen = false;
 		// Geruch quer durch uns => Wumpus ist da 
 		if( (null != Wahrnehmung.getNorth()) && Wahrnehmung.getNorth().isStench() && 

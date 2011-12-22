@@ -42,7 +42,7 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 			AltePositionen.removeLast();
 		
 		for(SituationsStatus Status : StatusListe) {
-			Status.updateStatus(AltePositionen, Nachbarschaft, Wahrnehmung);
+			Status.updateStatus(AltePositionen, Nachbarschaft, Wahrnehmung, Blickrichtung);
 		}
 		
 		// alle Regeln durchlaufen und von den zutreffenden die mit der hoechsten Prioritaet
@@ -51,7 +51,7 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 			if(NR.IstRegelAnwendbar(StatusListe)) {
 				// Regel anwenden
 				AgentAction Aktion = AktionAusfuehren(NR.berechneRegelAktion(Wahrnehmung, AltePositionen,
-														StatusListe));
+														StatusListe, Blickrichtung));
 				if(Aktion == AgentAction.GO)
 					BesuchteFelder++;
 				return Aktion;

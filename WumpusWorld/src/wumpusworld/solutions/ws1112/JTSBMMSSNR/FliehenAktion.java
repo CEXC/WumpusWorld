@@ -3,6 +3,7 @@ package wumpusworld.solutions.ws1112.JTSBMMSSNR;
 import java.util.LinkedList;
 
 import model.wumpusworld.CaveGround;
+import model.wumpusworld.Orientation;
 import model.wumpusworld.environment.CavePosition;
 import model.wumpusworld.environment.NeighbourhoodPerception;
 
@@ -15,7 +16,7 @@ public class FliehenAktion extends RegelAktion {
 	@Override
 	public AgentenAktion berechneAktion(LinkedList<CavePosition> Positionen,
 			CaveGround[] Nachbarschaft, NeighbourhoodPerception Wahrnehmung,
-			LinkedList<SituationsStatus> StatusListe) {
+			LinkedList<SituationsStatus> StatusListe, Orientation Blickrichtung) {
 		// Da wir auf die aktuelle Umgebung nur mit CaveGround zugreifen koennen
 		// muessen wir auch bei aktuellen CavePosition die Nachbarfelder relativ
 		// halten sprich West=0, Nordwest=1, Norden =2 ...

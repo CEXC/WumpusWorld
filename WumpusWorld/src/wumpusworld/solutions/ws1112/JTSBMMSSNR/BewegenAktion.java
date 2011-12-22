@@ -19,7 +19,7 @@ public class BewegenAktion extends RegelAktion {
 	@Override
 	public AgentenAktion berechneAktion(LinkedList<CavePosition> Positionen,
 			CaveGround[] Nachbarschaft, NeighbourhoodPerception Wahrnehmung,
-			LinkedList<SituationsStatus> StatusListe) {
+			LinkedList<SituationsStatus> StatusListe, Orientation Blickrichtung) {
 		// Hat noch optimierungspotential indem wir ein erreichen des Spielfeldende
 		// mit in die Zufallsberechnung mit einbeziehen
 		AgentenAktion Aktion = new AgentenAktion();

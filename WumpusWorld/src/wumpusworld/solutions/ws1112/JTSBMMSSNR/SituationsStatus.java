@@ -3,6 +3,7 @@ package wumpusworld.solutions.ws1112.JTSBMMSSNR;
 import java.util.LinkedList;
 
 import model.wumpusworld.CaveGround;
+import model.wumpusworld.Orientation;
 import model.wumpusworld.environment.CavePosition;
 import model.wumpusworld.environment.NeighbourhoodPerception;
 
@@ -11,7 +12,7 @@ public abstract class SituationsStatus {
 	final SituationsStatusID ID;
 	public abstract void updateStatus(LinkedList<CavePosition> Positionen, 
 										CaveGround Nachbarschaft[], 
-										NeighbourhoodPerception Wahrnehmung);
+										NeighbourhoodPerception Wahrnehmung, Orientation Blickrichtung);
 	
 	public SituationsStatus(SituationsStatusID ID, boolean Anzutreffen) {
 		this.ID = ID;

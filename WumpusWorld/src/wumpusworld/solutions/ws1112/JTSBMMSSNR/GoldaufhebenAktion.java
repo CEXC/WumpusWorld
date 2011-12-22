@@ -3,6 +3,7 @@ package wumpusworld.solutions.ws1112.JTSBMMSSNR;
 import java.util.LinkedList;
 
 import model.wumpusworld.CaveGround;
+import model.wumpusworld.Orientation;
 import model.wumpusworld.environment.CavePosition;
 import model.wumpusworld.environment.NeighbourhoodPerception;
 
@@ -16,7 +17,8 @@ public class GoldaufhebenAktion extends RegelAktion {
 	public AgentenAktion berechneAktion(LinkedList<CavePosition> Positionen,
 										CaveGround[] Nachbarschaft, 
 										NeighbourhoodPerception Wahrnehmung,
-										LinkedList<SituationsStatus> StatusListe) {
+										LinkedList<SituationsStatus> StatusListe,
+										Orientation Blickrichtung) {
 		// Falls wir schon auf einem Goldfeld stehen wird dieses aufgehoben
 		// Ansonsten gehen wir zu den meisten Goldstuecken
 		// bei himmelsrichtung ist [0] = West, [1] = Nord, [2] = Ost, [3] = Sued

@@ -3,6 +3,7 @@ package wumpusworld.solutions.ws1112.JTSBMMSSNR;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import model.wumpusworld.Orientation;
 import model.wumpusworld.environment.CavePosition;
 import model.wumpusworld.environment.NeighbourhoodPerception;
 
@@ -23,16 +24,20 @@ public class Regel implements Comparable<Regel> {
 	NeighbourhoodPerception Wahrnehmung;
 	//ArrayList<Orientation> BetretbareFelder = new ArrayList<Orientation>();
 	LinkedList<CavePosition> Positionen;
+	// Die aktuelle Blickrichtung
+	Orientation Blickrichtung;
 	
 	public AgentenAktion berechneRegelAktion(NeighbourhoodPerception Wahrnehmung, 
 											LinkedList<CavePosition> Positionen,
-											LinkedList<SituationsStatus> AgentenStatusListe) {
+											LinkedList<SituationsStatus> AgentenStatusListe,
+											Orientation Blickrichtung) {
 		this.Wahrnehmung = Wahrnehmung;
 		this.Positionen = Positionen;
+		this.Blickrichtung = Blickrichtung;
 		
 		Aktion = null;
 		for(RegelAktion RA : AktionenListe) {
-			Aktion = RA.berechneAktion(Positionen, Wahrnehmung.getNeighbourHood(), Wahrnehmung, AgentenStatusListe);
+			Aktion = RA.berechneAktion(Positionen, Wahrnehmung.getNeighbourHood(), Wahrnehmung, AgentenStatusListe, Blickrichtung);
 			if(Aktion != null)
 				break;
 		}

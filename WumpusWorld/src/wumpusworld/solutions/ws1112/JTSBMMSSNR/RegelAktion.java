@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import model.wumpusworld.CaveGround;
 import model.wumpusworld.CaveGroundType;
+import model.wumpusworld.Orientation;
 import model.wumpusworld.environment.CavePosition;
 import model.wumpusworld.environment.NeighbourhoodPerception;
 
@@ -18,7 +19,8 @@ public abstract class RegelAktion implements Comparable<RegelAktion> {
 	public abstract AgentenAktion berechneAktion(LinkedList<CavePosition> Positionen, 
 												 CaveGround Nachbarschaft[], 
 												 NeighbourhoodPerception Wahrnehmung, 
-												 LinkedList<SituationsStatus> StatusListe);
+												 LinkedList<SituationsStatus> StatusListe,
+												 Orientation Blickrichtung);
 
 	protected boolean IstFeldBetretbar(CaveGround Feld) {
 		if(Feld == null)
@@ -37,7 +39,31 @@ public abstract class RegelAktion implements Comparable<RegelAktion> {
 		}
 		return anzahl;
 	}
-	
+	// Richtung 0=West, 1=Nord, 2=Ost, 3=Sued
+	public boolean GucktInZielrichtung(CavePosition AgentPosition, CavePosition Ziel, Orientation Blickrichtung){
+		// ungueltiges Ziel oder ungueltige AgentPosition
+		System.out.println("Aget:" + AgentPosition.toString() + "Blickrichtung:" + Blickrichtung.toString()
+				+ "Ziel:" + Ziel.toString());
+		if(Ziel == null || AgentPosition == null)
+			return false;
+		if(Blickrichtung == Orientation.NORTH)
+			if(	AgentPosition.getX() == Ziel.getX())
+					if(	AgentPosition.getY()+1 == Ziel.getY() )
+						return true;
+		if(Blickrichtung == Orientation.WEST)
+			if	(AgentPosition.getX()-1 == Ziel.getX())
+					if(	AgentPosition.getY() == Ziel.getY() )
+						return true;
+		if(Blickrichtung == Orientation.EAST)
+			if(AgentPosition.getX()+1 == Ziel.getX())
+					if(	AgentPosition.getY() == Ziel.getY() )
+						return true;
+		if(Blickrichtung == Orientation.SOUTH)
+			if(AgentPosition.getX() == Ziel.getX())
+					if(	AgentPosition.getY()-1 == Ziel.getY() )
+						return true;
+		return false;
+	}
 	// Richtung 0=West, 1=Nord, 2=Ost, 3=Sued
 	public CavePosition getZielInRichtung(CavePosition Position, int Richtung) {
 		// ungueltige Richtung angegeben? => stehen bleiben

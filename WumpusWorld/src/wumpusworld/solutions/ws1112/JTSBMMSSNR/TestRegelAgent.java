@@ -59,7 +59,7 @@ public class TestRegelAgent {
 	    R.resetAktionenListe();
 	    R.addStatus(new GoldGesehen(true));
 	    R.addAktion(new GoldaufhebenAktion(200));
-	//    R.setPrioritaet(200);
+	    R.setPrioritaet(200);
 	    Regeln.add(new Regel(R));
 	    
 	    
@@ -87,9 +87,17 @@ public class TestRegelAgent {
 	    
 	    R.resetStatusListe();
 	    R.resetAktionenListe();
+	    R.addStatus(new WumpusGesehen(true));
+	    R.addAktion(new FliehenAktion(300));
+	    R.setPrioritaet(300);
+	    Regeln.add(new Regel(R));
+	    
+	    R.resetStatusListe();
+	    R.resetAktionenListe();
 	    R.addStatus(new WumpusGerochen(true));
-	    R.addAktion(new FliehenAktion(500));
-	 //  R.setPrioritaet(300);
+	    R.addAktion(new JagenAktion(299));
+	 //   R.addAktion(new FliehenAktion(500));
+	    R.setPrioritaet(300);
 	    Regeln.add(new Regel(R));
 	    
 	    for(int i=0; i<AnzahlSimulationen; i++) {
