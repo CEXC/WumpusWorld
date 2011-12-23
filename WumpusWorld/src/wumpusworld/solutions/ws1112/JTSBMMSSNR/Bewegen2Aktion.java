@@ -28,9 +28,14 @@ public class Bewegen2Aktion extends RegelAktion {
 		if(null == Ziel)
 			Ziel = Positionen.getFirst();
 		
+		CavePosition LetztePosition;
+		if(Positionen.size() <= 1)
+			LetztePosition = Positionen.getFirst();
+		else
+			LetztePosition = Positionen.get(1);
 		// Es gibt ein Ziel, jetzt muessen wir herausfinden, 
 		// ob es ein aktuelles Ziel ist, oder ob wir ein neues berechnen muessen
-		if(!Ziel.coordinatesEqual(Positionen.getFirst())) {
+		if(!Ziel.coordinatesEqual(Positionen.getFirst()) && !Ziel.coordinatesEqual(LetztePosition)) {
 			// ist das Ziel ein Nachbarfeld?
 			for(int i=0; i<4; i++) {
 				if(Ziel.coordinatesEqual(getZielInRichtung(Positionen.getFirst(), i))) {

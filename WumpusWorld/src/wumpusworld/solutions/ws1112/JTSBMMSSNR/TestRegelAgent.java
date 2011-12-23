@@ -87,8 +87,8 @@ public class TestRegelAgent {
 	    R.resetStatusListe();
 	    R.resetAktionenListe();
 	    R.addStatus(new WumpusGerochen(true));
-	    R.addAktion(new JagenAktion(299));
-	 //   R.addAktion(new FliehenAktion(500));
+	  //  R.addAktion(new JagenAktion(299));
+	    R.addAktion(new FliehenAktion(500));
 	    R.setPrioritaet(300);
 	    Regeln.add(new Regel(R));
 	    
