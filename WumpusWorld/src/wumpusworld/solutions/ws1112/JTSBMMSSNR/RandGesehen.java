@@ -19,9 +19,9 @@ public class RandGesehen extends SituationsStatus {
 	}
 	
 	public RandGesehen(boolean Anzutreffen) {
-		super(SituationsStatusID.WUMPUSGEROCHEN, Anzutreffen);
+		super(SituationsStatusID.RANDGESEHEN, Anzutreffen);
 	}
 	public RandGesehen() {
-		super(SituationsStatusID.WUMPUSGEROCHEN, false);
+		super(SituationsStatusID.RANDGESEHEN, false);
 	}
 }

@@ -6,5 +6,7 @@ public enum RegelAktionID {
 	BEWEGEN,
 	WARTEN,
 	FLIEHEN,
-	JAGEN
+	JAGEN,
+	// hab mir die unterschiede zu bewegen noch nicht angeguckt, sind wirklich beide notwendig?
+	BEWEGEN2,
 }

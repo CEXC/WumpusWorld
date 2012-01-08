@@ -4,7 +4,6 @@ import java.util.LinkedList;
 
 import model.wumpusworld.CaveGround;
 import model.wumpusworld.Orientation;
-import model.wumpusworld.agents.AgentAction;
 import model.wumpusworld.environment.CavePosition;
 import model.wumpusworld.environment.NeighbourhoodPerception;
 
