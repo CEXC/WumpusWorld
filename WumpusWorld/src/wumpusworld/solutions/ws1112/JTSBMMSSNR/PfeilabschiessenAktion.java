@@ -18,7 +18,9 @@ public class PfeilabschiessenAktion extends RegelAktion {
 			CaveGround[] Nachbarschaft, NeighbourhoodPerception Wahrnehmung,
 			LinkedList<SituationsStatus> StatusListe, Orientation Blickrichtung,
 			RegelAgent Agent) {
-		return null;
+		AgentenAktion Aktion = new AgentenAktion();
+		Aktion.PfeilAbschiessen = true;
+		return Aktion;
 	}
 
 }

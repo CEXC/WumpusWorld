@@ -18,7 +18,9 @@ public class WartenAktion extends RegelAktion {
 			CaveGround[] Nachbarschaft, NeighbourhoodPerception Wahrnehmung,
 			LinkedList<SituationsStatus> StatusListe, Orientation Blickrichtung,
 			RegelAgent Agent) {
-		return null;
+		AgentenAktion Aktion = new AgentenAktion();
+		Aktion.Ziel = Agent.getCavePosition();
+		return Aktion;
 	}
 
 }
