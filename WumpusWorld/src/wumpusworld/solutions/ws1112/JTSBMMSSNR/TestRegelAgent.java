@@ -101,46 +101,59 @@ public class TestRegelAgent {
 	    
 	    Regel R = new Regel();
     
-	    // Wenn Gold gesehen wurde, hebe dieses auf
+	    // Wenn nichts gesehen wurde, kein Rand kein gar nichts bewegen wir uns einfach herum
 	    R.resetStatusListe();
 	    R.resetAktionenListe();
+	    R.addStatus(new NichtsFestgestellt(true));
+	    R.addAktion(new Bewegen2Aktion(200));
+	    Regeln.add(new Regel(R));
+	    
+	    // Wenn Gold gesehen wurde, hebe dieses auf
 	    R.addStatus(new GoldGesehen(true));
-	    //R.addAktion(new Bewegen2Aktion(200));
 	    R.addAktion(new GoldaufhebenAktion(200));
-	    R.setPrioritaet(200);
 	    Regeln.add(new Regel(R));
 	    
 	    // Wenn der Rand gesehen wurde bewegen wir uns trotzdem weiter
 	    R.resetStatusListe();
 	    R.resetAktionenListe();
 	    R.addStatus(new RandGesehen(true));
-	    R.addAktion(new Bewegen2Aktion(190));
-	    R.setPrioritaet(190);
+	    R.addAktion(new Bewegen2Aktion(200));
 	    Regeln.add(new Regel(R));
-	    
-	    // Wenn nichts gesehen wurde, kein Rand kein gar nichts bewegen wir uns einfach herum
+	    	    
+	    // Wenn der Wumpus gerochen wurde, fliehen wir
 	    R.resetStatusListe();
 	    R.resetAktionenListe();
-	    R.addStatus(new NichtsFestgestellt(true));
-	    R.addAktion(new Bewegen2Aktion(60));
-	    R.setPrioritaet(10);
+	    R.addStatus(new WumpusGerochen(true));
+	    R.addAktion(new FliehenAktion(200));
 	    Regeln.add(new Regel(R));
 	    
+	    // Wenn der Wumpus gerochen wurde, jagen wir
+	    R.resetStatusListe();
+	    R.resetAktionenListe();
+	    R.addStatus(new WumpusGerochen(true));
+	    R.addAktion(new JagenAktion(200));
+	    Regeln.add(new Regel(R));
+	    	    
 	    // Wenn der Wumpus gesehen wurde, fliehen wir
 	    R.resetStatusListe();
 	    R.resetAktionenListe();
 	    R.addStatus(new WumpusGesehen(true));
-	    R.addAktion(new FliehenAktion(300));
-	    R.setPrioritaet(300);
+	    R.addAktion(new FliehenAktion(200));
 	    Regeln.add(new Regel(R));
 	    
-	    // Wenn der Wumpus gerichen wurde, fliehen wir
+	    // Wenn der Wumpus gesehen wurde und wir gefangen sind, jagen wir
 	    R.resetStatusListe();
 	    R.resetAktionenListe();
-	    R.addStatus(new WumpusGerochen(true));
-	    //  R.addAktion(new JagenAktion(299));
-	    R.addAktion(new FliehenAktion(500));
-	    R.setPrioritaet(300);
+	    R.addStatus(new WumpusGesehen(true));
+	    R.addStatus(new Gefangen(true));
+	    R.addAktion(new JagenAktion(200));
+	    Regeln.add(new Regel(R));
+	    
+	    // Wenn der Wumpus gesehen wurde, schiessen wir einen pfeil ab
+	    R.resetStatusListe();
+	    R.resetAktionenListe();
+	    R.addStatus(new WumpusGesehen(true));
+	    R.addAktion(new PfeilabschiessenAktion(200));
 	    Regeln.add(new Regel(R));
 	    
 	    GenAlgo.setRegeln(Regeln);
