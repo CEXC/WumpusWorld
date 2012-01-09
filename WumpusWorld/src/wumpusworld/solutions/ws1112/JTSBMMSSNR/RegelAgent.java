@@ -12,7 +12,7 @@ import model.wumpusworld.environment.CavePosition;
 import model.wumpusworld.environment.NeighbourhoodPerception;
 
 
-public class RegelAgent extends NeighbourhoodPerceivingAgent {
+public class RegelAgent extends NeighbourhoodPerceivingAgent implements Comparable<RegelAgent>{
 	// Buchfuehrung
 	int BesuchteFelder=1;
 	// Regelsatz
@@ -146,6 +146,22 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 		return Fitness;
 	}
 	
+	// Wir sortieren Agenten nach deren Fitness fitter vor weniger fit
+	@Override
+	public int compareTo(RegelAgent R) {
+		if(Fitness  == null && R.Fitness == null)
+			return 0;
+		if(Fitness == null)
+			return 1;
+		if(R.Fitness == null)
+			return -1;
+		if(Fitness > R.Fitness)
+			return -1;
+		else if(Fitness < R.Fitness)
+			return 1;
+		// Fitness gleich...
+		return 0;
+	}
 	@Override
 	public String getName() {
 		return "RegelAgent";

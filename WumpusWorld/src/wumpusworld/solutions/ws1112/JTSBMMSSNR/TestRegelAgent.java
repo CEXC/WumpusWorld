@@ -2,6 +2,9 @@ package wumpusworld.solutions.ws1112.JTSBMMSSNR;
 
 import james.SimSystem;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
@@ -172,6 +175,38 @@ public class TestRegelAgent {
 	    for(int i=0; i<AnzahlGenerationen; i++) {
 	    	SimSystem.report(Level.INFO, "Fitness der "+(i+1)+". Generation: " + Fitness[i]);
 	    }
+	    
+	    BufferedWriter BW=null;
+  	    try {
+  	    	BW = new BufferedWriter(new FileWriter("../A2Ergebnis.txt", true));
+  	    	BW.newLine();
+  	    	BW.write("////////////// Neuer Durchgang ///////////////////////////////////////////////////");
+  	    	BW.newLine();
+  	    	if(SeedErhalten) {
+  	    		BW.write("Seed: " + NeuesSeed);
+  	    		BW.newLine();
+  	    	}
+  			BW.write("Ausgangs Population: " + Populationsgroesse);
+  			BW.newLine();
+  			BW.write("Mutationswahrscheinlichkeit: "+Mutationswahrscheinlichkeit);
+  			BW.newLine();
+  			BW.write("Rekombinationsstelle: " + Kreuzungsstelle); 
+  			BW.newLine();
+  			BW.write("Fortpflanzungsteilnehmer: " + Fortpflanzung);
+  			BW.newLine();
+  			for(int i=0; i<AnzahlGenerationen; i++) {
+  		    	BW.write("Fitness der "+(i+1)+". Generation: " + Fitness[i]);
+  		    	BW.newLine();
+  		    }
+  			BW.flush();
+  		} catch (IOException ioe) {
+  			ioe.printStackTrace();
+  	    } finally {                    
+  	    	if (BW != null) try {
+  	    		BW.close();
+  	    	} catch (IOException ioe2) {
+  	    	}
+  	    }
     System.exit(0);
 	}
 }

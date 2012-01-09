@@ -2,20 +2,12 @@ package wumpusworld.solutions.ws1112.JTSBMMSSNR;
 
 import james.SimSystem;
 import james.core.math.random.generators.IRandom;
-import james.core.model.variables.IntVariable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
-import model.wumpusworld.WumpusWorldState;
-import model.wumpusworld.agents.IWumpusWorldAgent;
-import model.wumpusworld.agents.NeighbourhoodPerceivingAgent;
-import model.wumpusworld.agents.TerriblyDangerousWumpus;
-
-import experiments.wumpus.WumpusExperimentUtils;
+import examples.wumpusworld.exercises.ExerciseUtils;
 
 public class GenetischerAlgo {
 
@@ -30,12 +22,9 @@ public class GenetischerAlgo {
 			if(SeedErhalten)
 				SimSystem.getRNGGenerator().setSeed(Seed);
 		    try {
-		    	// BUG (siehe Mail)? daher ein bisl Trickserei mit eigener exerciseTwo
-		    	Fitness = GenetischerAlgo.exerciseTwo(Individuum, Visualisierung, PauseZwSchritten);
+		    	Fitness = ExerciseUtils.exerciseTwo(Individuum, Visualisierung, PauseZwSchritten);
 
 		    	Individuum.setFitness(Fitness);
-		    	if(Fitness == null)
-		    		continue;
 		    	AnzahlSimulationen++;
 		    	GesamtFitness += Fitness;
 		    }
@@ -53,7 +42,12 @@ public class GenetischerAlgo {
 		ArrayList<RegelAgent> NeuePopulation = new ArrayList<RegelAgent>();
 
 		// Sortiere Population von fit zu nicht fit
-		//Collections.sort(Population);
+		Collections.sort(Population);
+		
+		// Nur zur Sicherheit, sollte "nie" (in 99,9999999999999999% nicht) vorkommen
+		if(Population.size() < 1)
+			return false;
+		
 		// Schmeisse alle ohne Berechtigung zur Fortpflanzung raus
 		int MaxEltern = Populationsgroesse*ProzentAnteilDieFortpflanzen/100;
 		ArrayList<RegelAgent> Eltern = new ArrayList<RegelAgent>(Population.subList(0, MaxEltern-1));
@@ -145,31 +139,6 @@ public class GenetischerAlgo {
 	    }
 		return true;
 	}
-	
-	public static Integer exerciseTwo(
-		      NeighbourhoodPerceivingAgent agentToBeTested, boolean visualisation,
-		      long pauseBetweenSteps) throws Throwable {
-		    List<IWumpusWorldAgent> agentList = new ArrayList<IWumpusWorldAgent>();
-		    agentList.add(agentToBeTested);
-		    agentList.add(new TerriblyDangerousWumpus());
-		    agentList.add(new TerriblyDangerousWumpus());
-		    agentList.add(new TerriblyDangerousWumpus());
-
-		    Map<String, Object> additionalParameters = new HashMap<String, Object>();
-		    additionalParameters.put(WumpusWorldState.WUMPUS_PIT_DENSITY, .2);
-
-		    Map<String, Object> results =
-		    		WumpusExperimentUtils.testAgents(
-		            "examples.wumpusworld.simple.SimpleWumpusWorld", agentList,
-		            visualisation, pauseBetweenSteps, 20, 500, 0, additionalParameters);
-		    // Fange den null Pointer ab
-		    if(results == null) {
-		    	System.out.println("results == null");
-		    	return null;
-		    }
-		    return ((IntVariable) results.get(agentToBeTested.getClass().getName()))
-		        .getValue();
-		  }
 	
 	public void setSeed(long NeuesSeed) {
 		Seed = NeuesSeed;
