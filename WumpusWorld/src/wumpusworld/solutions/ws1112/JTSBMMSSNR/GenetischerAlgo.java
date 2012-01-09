@@ -2,49 +2,128 @@ package wumpusworld.solutions.ws1112.JTSBMMSSNR;
 
 import james.SimSystem;
 import james.core.math.random.generators.IRandom;
-import james.core.util.misc.Pair;
+import james.core.model.variables.IntVariable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
-import examples.wumpusworld.exercises.ExerciseUtils;
+import model.wumpusworld.WumpusWorldState;
+import model.wumpusworld.agents.IWumpusWorldAgent;
+import model.wumpusworld.agents.NeighbourhoodPerceivingAgent;
+import model.wumpusworld.agents.TerriblyDangerousWumpus;
+
+import experiments.wumpus.WumpusExperimentUtils;
 
 public class GenetischerAlgo {
 
-	public int testPopulationsFitness(boolean Visualisierung, long PauseZwSchritten) {
+	public float testPopulationsFitness(boolean Visualisierung, long PauseZwSchritten) {
 		// Keine Population => koennen wir nichts machen
 		if(Population == null || Population.isEmpty())
 			return -999999999;
 		int GesamtFitness = 0;
-		for(int i=0; i<Populationsgroesse; i++) {
-			int Fitness = 0;
+		int AnzahlSimulationen = 0;
+		for(RegelAgent Individuum : Population) {
+			Integer Fitness = null;
 			if(SeedErhalten)
 				SimSystem.getRNGGenerator().setSeed(Seed);
 		    try {
-		    	
-		    	/* BUG ? Threading Problem?
-		    	 * Zeile 34: ExerciseUtils.exerciseTwo(Population.get(i).getFirstValue(), Visualisierung, PauseZwSchritten);
-		    	 * Dies fuehrte zu folgendem Error
-		    	 * java.lang.NullPointerException
-		    	 * 		at examples.wumpusworld.exercises.ExerciseUtils.exerciseTwo(ExerciseUtils.java:79)
-		    	 * 		at wumpusworld.solutions.ws1112.JTSBMMSSNR.GenetischerAlgo.testPopulationsFitness(GenetischerAlgo.java:34)
-		    	 * 		at wumpusworld.solutions.ws1112.JTSBMMSSNR.TestRegelAgent.main(TestRegelAgent.java:148)
-		    	 * Breakpoint auf Zeile 34 zeigt, dass weder Population, noch Population.get(i), noch 
-		    	 * Population.get(i).getFirstValue() gleich null waren, d.h. der Fehler muss wohl in exerciseTwo liegen
-		    	 */
-		    	Fitness = ExerciseUtils.exerciseTwo(Population.get(i).getFirstValue(), Visualisierung, PauseZwSchritten);
-		    	Population.get(i).setSecondValue(Fitness);
+		    	// BUG (siehe Mail)? daher ein bisl Trickserei mit eigener exerciseTwo
+		    	Fitness = GenetischerAlgo.exerciseTwo(Individuum, Visualisierung, PauseZwSchritten);
+
+		    	Individuum.setFitness(Fitness);
+		    	if(Fitness == null)
+		    		continue;
+		    	AnzahlSimulationen++;
 		    	GesamtFitness += Fitness;
 		    }
 		    catch (Throwable t) {
 		    	t.printStackTrace();
 		    }    
 	    }
-		return GesamtFitness;
+		return GesamtFitness/AnzahlSimulationen;
 	}
+	
+	public boolean nextGeneration() {
+		if((0 == Populationsgroesse) || (ProzentAnteilDieFortpflanzen == 0))
+			return false;
+		
+		ArrayList<RegelAgent> NeuePopulation = new ArrayList<RegelAgent>();
+
+		// Sortiere Population von fit zu nicht fit
+		//Collections.sort(Population);
+		// Schmeisse alle ohne Berechtigung zur Fortpflanzung raus
+		int MaxEltern = Populationsgroesse*ProzentAnteilDieFortpflanzen/100;
+		ArrayList<RegelAgent> Eltern = new ArrayList<RegelAgent>(Population.subList(0, MaxEltern-1));
+		
+				
+		for(int i=0; i<Populationsgroesse; i++) {
+			// Waehle zufaellig zwei Elternteile
+		    IRandom ZufallsZahlenGen = null;
+			ZufallsZahlenGen = SimSystem.getRNGGenerator().getNextRNG();
+			// Damit wir auch sicher zwei verschiedene Elternteile haben
+			int iVater, iMutter;
+			iMutter = ZufallsZahlenGen.nextInt(Eltern.size());
+			iVater = ZufallsZahlenGen.nextInt(Eltern.size());
+			while(iMutter == iVater) 
+				iVater = ZufallsZahlenGen.nextInt(Eltern.size());
+		    RegelAgent Mutter = Eltern.get(iMutter);
+		    RegelAgent Vater = Eltern.get(iVater);
+
+			
+		    RegelAgent Regeler = new RegelAgent();
+		    // SituationsStatus hinzufuegen
+		    Regeler.addSituationsStatus(new WumpusVoraus());
+		    Regeler.addSituationsStatus(new WumpusGerochen());
+		    Regeler.addSituationsStatus(new WumpusGesehen());
+		    Regeler.addSituationsStatus(new GoldGesehen());
+		    Regeler.addSituationsStatus(new Gefangen());
+		    Regeler.addSituationsStatus(new NichtsFestgestellt());
+		    Regeler.addSituationsStatus(new RandGesehen());
+		 	
+		    // Hole Regeln der Eltern
+		    LinkedList<Regel> VaterRegeln = Mutter.getRegeln();
+		    LinkedList<Regel> MutterRegeln = Vater.getRegeln();
+		    
+		    // Durchlaufe alle vorhandenen Regeln und 
+		    // Kreuze Prioritaeten
+		    // ggf an zufaelliger Stelle
+		    int KS = Kreuzungsstelle;
+		    if(KS == -1)
+		    	KS = ZufallsZahlenGen.nextInt(Regeln.size());
+		    for(int j=0; j<Regeln.size(); j++) {
+		    	// Muttergenom
+		    	LinkedList<Regel> BenutzeRegeln = null;
+		    	if(j <= KS) {
+		    		BenutzeRegeln = MutterRegeln;
+		    	}
+		    	// Vatergenom
+		    	else {
+		    		BenutzeRegeln = VaterRegeln;
+		    		}
+		    	for(Regel R : BenutzeRegeln) {
+		    		if(R.VergleichOhneP(Regeln.get(j)))
+		    			Regeln.get(j).setPrioritaet(R.getPrioritaet());
+		    	}
+		    	// Ggf Mutieren wir noch eine bisl rum
+		    	if(Mutationswahrscheinlichkeit > ZufallsZahlenGen.nextInt(100))
+		    		Regeln.get(j).setPrioritaet(ZufallsZahlenGen.nextInt(1001));
+			}		
+		    Regeler.addRegeln(Regeln);
+		    NeuePopulation.add(Regeler);
+	    }
+		Population = NeuePopulation;
+		return true;
+	}
+	
+	
+	
 	public boolean initPopulation() {
 		if(0 == Populationsgroesse)
 			return false;
-		Population = new ArrayList<Pair<RegelAgent, Integer>>();
+		Population = new ArrayList<RegelAgent>();
 		for(int i=0; i<Populationsgroesse; i++) {
 		    RegelAgent Regeler = new RegelAgent();
 		    // SituationsStatus hinzufuegen
@@ -62,10 +141,35 @@ public class GenetischerAlgo {
 				NR.setPrioritaet(ZufallsZahlenGen.nextInt(1001));
 			}
 		    Regeler.addRegeln(Regeln);
-		    Population.add(new Pair<RegelAgent, Integer>(Regeler, -999999999));
+		    Population.add(Regeler);
 	    }
 		return true;
 	}
+	
+	public static Integer exerciseTwo(
+		      NeighbourhoodPerceivingAgent agentToBeTested, boolean visualisation,
+		      long pauseBetweenSteps) throws Throwable {
+		    List<IWumpusWorldAgent> agentList = new ArrayList<IWumpusWorldAgent>();
+		    agentList.add(agentToBeTested);
+		    agentList.add(new TerriblyDangerousWumpus());
+		    agentList.add(new TerriblyDangerousWumpus());
+		    agentList.add(new TerriblyDangerousWumpus());
+
+		    Map<String, Object> additionalParameters = new HashMap<String, Object>();
+		    additionalParameters.put(WumpusWorldState.WUMPUS_PIT_DENSITY, .2);
+
+		    Map<String, Object> results =
+		    		WumpusExperimentUtils.testAgents(
+		            "examples.wumpusworld.simple.SimpleWumpusWorld", agentList,
+		            visualisation, pauseBetweenSteps, 20, 500, 0, additionalParameters);
+		    // Fange den null Pointer ab
+		    if(results == null) {
+		    	System.out.println("results == null");
+		    	return null;
+		    }
+		    return ((IntVariable) results.get(agentToBeTested.getClass().getName()))
+		        .getValue();
+		  }
 	
 	public void setSeed(long NeuesSeed) {
 		Seed = NeuesSeed;
@@ -96,13 +200,24 @@ public class GenetischerAlgo {
 	public void setRegeln(ArrayList<Regel> Regeln) {
 		this.Regeln = Regeln;
 	}
+	public int getProzentAnteilDieFortpflanzen() {
+		return ProzentAnteilDieFortpflanzen;
+	}
+
+	public boolean setProzentAnteilDieFortpflanzen(int Fortpflanzung) {
+		if((Fortpflanzung <= 0) || (Fortpflanzung > 100))
+			return false;
+		ProzentAnteilDieFortpflanzen = Fortpflanzung;
+		return true;
+
+	}
 	
 	private long Seed = 0;
 	private boolean SeedErhalten = false;
 	private int Mutationswahrscheinlichkeit = 0;
 	private int Populationsgroesse = 0;
-	private ArrayList<Pair<RegelAgent, Integer>> Population = null;
-	private int Kreuzungsstelle = 0;
+	private ArrayList<RegelAgent> Population = null;
+	private int Kreuzungsstelle = -1;
+	private int ProzentAnteilDieFortpflanzen = 0;
 	private ArrayList<Regel> Regeln = null;
-	
 }

@@ -17,6 +17,8 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 	int BesuchteFelder=1;
 	// Regelsatz
 	LinkedList<Regel> Regeln = new LinkedList<Regel>();
+	// Fitness
+	Integer Fitness = null;
 	
 	// Aktuelle Situation
 	LinkedList<SituationsStatus> StatusListe = new LinkedList<SituationsStatus>();
@@ -126,11 +128,24 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 	public void addRegeln(List<Regel> NeueRegeln) {
 		for(Regel NR : NeueRegeln) {
 			if(!Regeln.contains(NR))
-				Regeln.add(NR);
+				Regeln.add(new Regel(NR));
 		}
 			
 		Collections.sort(Regeln);
 	}
+	
+	public LinkedList<Regel> getRegeln() {
+		return Regeln;
+	}
+	
+	public void setFitness(Integer Fitness) {
+		this.Fitness = Fitness;
+	}
+	
+	public Integer getFitness() {
+		return Fitness;
+	}
+	
 	@Override
 	public String getName() {
 		return "RegelAgent";

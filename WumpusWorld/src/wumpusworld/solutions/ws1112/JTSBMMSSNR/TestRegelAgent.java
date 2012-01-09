@@ -22,6 +22,8 @@ public class TestRegelAgent {
 	 												- GXXXXXXXXI Wobei XXXXXX fuer einen Int steht, der mit I beendet wird
 	 	Groesse der Population:					Standard = 50
 	 												- PXXXXXXXXI Wobei XXXXXX fuer einen Int steht, der mit I beendet wird
+	 	Anteil an Fortpflanzung in Prozent:		Standard = 50
+	 												- FXXXXXXXXI Wobei XXXXXX fuer einen Int steht, der mit I beendet wird
 	 	Wahrscheinlichkeit einer Mutation in %: Standard = 3
 	 												- MXXXXXXXXI Wobei XXXXXX fuer einen Int steht, der mit I beendet wird
 	 	Kreuzung an definierter Genom Stelle:	Standard = random
@@ -34,8 +36,9 @@ public class TestRegelAgent {
 	    long PauseZwSchritten = 0L;
 	    int AnzahlGenerationen = 20;
 	    int Mutationswahrscheinlichkeit = 3;
-	    int Kreuzungsstelle = 0;
+	    int Kreuzungsstelle = -1;
 	    int Populationsgroesse = 50;
+	    int Fortpflanzung = 50;
 	    for(int i=0; i< args.length; i++) {
 	    	if(args[i].equals("V"))
 	    		Visualisierung = true;
@@ -52,6 +55,9 @@ public class TestRegelAgent {
 	    	}
 	    	else if(args[i].startsWith("P") && args[i].endsWith("I") && args[i].length() > 2) {
 	    		Populationsgroesse = Integer.parseInt(args[i].substring(1,args[i].length()-1));
+	    	}
+	    	else if(args[i].startsWith("F") && args[i].endsWith("I") && args[i].length() > 2) {
+	    		Fortpflanzung = Integer.parseInt(args[i].substring(1,args[i].length()-1));
 	    	}
 	    	else if(args[i].startsWith("M") && args[i].endsWith("I") && args[i].length() > 2) {
 	    		Mutationswahrscheinlichkeit = Integer.parseInt(args[i].substring(1,args[i].length()-1));
@@ -78,6 +84,11 @@ public class TestRegelAgent {
 	    	System.exit(0);	    	
 	    }
 	    if(!GenAlgo.setMutationswahrscheinlichkeit(Mutationswahrscheinlichkeit)) {
+	    	SimSystem.report(Level.SEVERE, "Versuch des Setzens einer ungueltigen Mutationswahrscheinlichkeit: " + 
+	    									Mutationswahrscheinlichkeit);
+	    	System.exit(0);	    	
+	    }
+	    if(!GenAlgo.setProzentAnteilDieFortpflanzen(Fortpflanzung)) {
 	    	SimSystem.report(Level.SEVERE, "Versuch des Setzens einer ungueltigen Mutationswahrscheinlichkeit: " + 
 	    									Mutationswahrscheinlichkeit);
 	    	System.exit(0);	    	
@@ -132,7 +143,7 @@ public class TestRegelAgent {
 	    GenAlgo.setRegeln(Regeln);
 	    // REGELN - Ende	    
 	    
-	    if(!GenAlgo.setKreuzungsstelle(Kreuzungsstelle)) {
+	    if(Kreuzungsstelle > -1 && !GenAlgo.setKreuzungsstelle(Kreuzungsstelle)) {
 	    	SimSystem.report(Level.SEVERE, "Versuch des Setzens einer ungueltigen Kreuzungsstelle: " + 
 	    			Kreuzungsstelle);
 	    	System.exit(0);	    	
@@ -143,7 +154,7 @@ public class TestRegelAgent {
 	    	System.exit(0);	    	
 	    }
 	    
-	    int Fitness[] = new int[AnzahlGenerationen];
+	    float Fitness[] = new float[AnzahlGenerationen];
 	    for(int i=0; i<AnzahlGenerationen; i++) {
 	    	Fitness[i] = GenAlgo.testPopulationsFitness(Visualisierung, PauseZwSchritten);
 	    	if(Fitness[i] == -999999999) {
@@ -152,7 +163,10 @@ public class TestRegelAgent {
 		    	System.exit(0);	 
 	    	}
 	    	SimSystem.report(Level.INFO, "Fitness der "+(i+1)+". Generation: " + Fitness[i]);
-	    	//GenAlgo.NextGeneration();
+	    	 if(!GenAlgo.nextGeneration()) {
+	 	    	SimSystem.report(Level.SEVERE, "Fehler beim erstellen der naechsten Population");
+	 	    	System.exit(0);	    	
+	 	    }
 	    } 
 	    // damit man es gebuendelt nochmal am ende hat
 	    for(int i=0; i<AnzahlGenerationen; i++) {
