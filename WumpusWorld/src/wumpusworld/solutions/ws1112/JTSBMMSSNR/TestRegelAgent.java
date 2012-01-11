@@ -156,6 +156,13 @@ public class TestRegelAgent {
 	    R.addAktion(new PfeilabschiessenAktion(200));
 	    Regeln.add(new Regel(R));
 	    
+	    // Wenn der Wumpus gefangen ist, gehen wir auch ueber gruben
+	    R.resetStatusListe();
+	    R.resetAktionenListe();
+	    R.addStatus(new Gefangen(true));
+	    R.addAktion(new GeheUeberGruben(200));
+	    Regeln.add(new Regel(R));
+	    
 	    GenAlgo.setRegeln(Regeln);
 	    // REGELN - Ende	    
 	    

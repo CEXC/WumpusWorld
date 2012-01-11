@@ -30,7 +30,11 @@ public abstract class RegelAktion implements Comparable<RegelAktion> {
 			return false;
 		return true;
 	}
-	
+	protected boolean IstFeldUeberhauptBetretbar(CaveGround Feld) {
+		if(Feld == null)
+			return false;
+		return true;
+	}
 	public int ZaehleGold(CaveGround[] Felder){
 		int anzahl = 0;
 		for(CaveGround feld : Felder){

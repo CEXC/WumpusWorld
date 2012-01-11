@@ -8,4 +8,5 @@ public enum RegelAktionID {
 	FLIEHEN,
 	JAGEN,
 	BEWEGEN2,
+	GEHEUEBERGRUBEN,
 }
