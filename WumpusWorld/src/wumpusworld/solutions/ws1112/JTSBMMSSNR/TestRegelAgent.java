@@ -196,16 +196,16 @@ public class TestRegelAgent {
   	    	BW.write("////////////// Neuer Durchgang ///////////////////////////////////////////////////");
   	    	BW.newLine();
   	    	if(SeedErhalten) {
-  	    		BW.write("Seed: " + NeuesSeed);
+  	    		BW.write("Verwendetes Seed: " + NeuesSeed);
   	    		BW.newLine();
   	    	}
-  			BW.write("Ausgangs Population: " + Populationsgroesse);
+  			BW.write("Ausgangs Populationsgroesse: " + Populationsgroesse);
   			BW.newLine();
-  			BW.write("Mutationswahrscheinlichkeit: "+Mutationswahrscheinlichkeit);
+  			BW.write("Mutationswahrscheinlichkeit: "+Mutationswahrscheinlichkeit+"%");
   			BW.newLine();
-  			BW.write("Rekombinationsstelle: " + Kreuzungsstelle); 
+  			BW.write("Rekombinationsstelle (-1==Zufall): " + Kreuzungsstelle); 
   			BW.newLine();
-  			BW.write("Fortpflanzungsteilnehmer: " + Fortpflanzung);
+  			BW.write("Fortpflanzungsteilnehmer (die besten x%): " + Fortpflanzung + "%");
   			BW.newLine();
   			for(int i=0; i<AnzahlGenerationen; i++) {
   		    	BW.write("Fitness der "+(i+1)+". Generation: " + Fitness[i]);
