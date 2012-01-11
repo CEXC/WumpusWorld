@@ -11,12 +11,14 @@ import examples.wumpusworld.exercises.ExerciseUtils;
 
 public class GenetischerAlgo {
 
+	// gebe die durchschnittliche Fitness der Population zurueck
 	public float testPopulationsFitness(boolean Visualisierung, long PauseZwSchritten) {
 		// Keine Population => koennen wir nichts machen
 		if(Population == null || Population.isEmpty())
 			return -999999999;
 		int GesamtFitness = 0;
 		int AnzahlSimulationen = 0;
+		// teste Fitness fuer jedes Idividuum
 		for(RegelAgent Individuum : Population) {
 			Integer Fitness = null;
 			if(SeedErhalten)
@@ -36,7 +38,7 @@ public class GenetischerAlgo {
 	}
 	
 	public boolean nextGeneration() {
-		if((0 == Populationsgroesse) || (ProzentAnteilDieFortpflanzen == 0))
+		if((1 >= Populationsgroesse) || (ProzentAnteilDieFortpflanzen == 0))
 			return false;
 		
 		ArrayList<RegelAgent> NeuePopulation = new ArrayList<RegelAgent>();
@@ -51,6 +53,7 @@ public class GenetischerAlgo {
 		// Schmeisse alle ohne Berechtigung zur Fortpflanzung raus
 		int MaxEltern = Populationsgroesse*ProzentAnteilDieFortpflanzen/100;
 		ArrayList<RegelAgent> DieBestenDerBesten = new ArrayList<RegelAgent>(Population.subList(0, MaxEltern));
+		// zum Zwischenspeichern gewordener Eltern
 		ArrayList<RegelAgent> Eltern = new ArrayList<RegelAgent>();
 		
 		IRandom ZufallsZahlenGen = null;
@@ -105,7 +108,8 @@ public class GenetischerAlgo {
 		ZufallsZahlenGen = SimSystem.getRNGGenerator().getNextRNG();
 		RegelAgent Kind1 = new RegelAgent();
 	    RegelAgent Kind2 = new RegelAgent();
-	    // SituationsStatus hinzufuegen
+	    // SituationsStatus bei beiden Kindern hinzufuegen
+	    // hier fest codiert, koennte aber von den Eltern geerbt werden
 	    Kind1.addSituationsStatus(new WumpusVoraus());
 	    Kind1.addSituationsStatus(new WumpusGerochen());
 	    Kind1.addSituationsStatus(new WumpusGesehen());
@@ -156,6 +160,7 @@ public class GenetischerAlgo {
 		Kinder.add(Kind2);
 		return Kinder;
 	}
+	
 	public Regel getRegel(LinkedList<Regel> ElternteilRegeln, Regel R) {
 		for(Regel NR : ElternteilRegeln) {
 			if(NR.VergleichOhneP(R))
@@ -165,8 +170,10 @@ public class GenetischerAlgo {
 	}
 	
 	public boolean initPopulation() {
-		if(0 == Populationsgroesse)
+		// anfangspopulation muss mindestens zwei Individuun grossein
+		if(1 >= Populationsgroesse)
 			return false;
+		
 		Population = new ArrayList<RegelAgent>();
 		for(int i=0; i<Populationsgroesse; i++) {
 		    RegelAgent Regeler = new RegelAgent();

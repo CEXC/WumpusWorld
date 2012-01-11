@@ -7,6 +7,8 @@ import model.wumpusworld.Orientation;
 import model.wumpusworld.environment.CavePosition;
 import model.wumpusworld.environment.NeighbourhoodPerception;
 
+// Kapselt verschiedene Situationen (abgeleitet von dieser Klasse)
+// diese koennen den Regeln dann hinzugefuegt werden
 public abstract class SituationsStatus {
 	boolean Anzutreffen = false;
 	final SituationsStatusID ID;

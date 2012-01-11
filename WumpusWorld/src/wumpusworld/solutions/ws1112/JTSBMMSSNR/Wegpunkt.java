@@ -3,6 +3,7 @@ package wumpusworld.solutions.ws1112.JTSBMMSSNR;
 import model.wumpusworld.Orientation;
 import james.core.util.misc.Pair;
 
+// Hilfsklasse fuer die verschiedenen Suchverfahren
 public class Wegpunkt {
 	Pair<Integer, Integer> Koordinaten;
 	Wegpunkt Vorgaenger;

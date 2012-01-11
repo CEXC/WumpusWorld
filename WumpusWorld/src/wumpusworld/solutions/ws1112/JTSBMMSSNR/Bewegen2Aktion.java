@@ -10,6 +10,8 @@ import model.wumpusworld.Orientation;
 import model.wumpusworld.environment.CavePosition;
 import model.wumpusworld.environment.NeighbourhoodPerception;
 
+// Im Gegensatz zur BewegenAktion versucht diese die grobe Bewegungsrichtung
+// mit einzuplanen
 public class Bewegen2Aktion extends RegelAktion {
 
 	public Bewegen2Aktion(int Prioritaet) {
@@ -99,16 +101,6 @@ public class Bewegen2Aktion extends RegelAktion {
 		return Aktion;
 	}
 	
-	private LinkedList<CavePosition> removePosition(CavePosition Position, LinkedList<CavePosition> Liste) {
-		Position.setOrientation(Orientation.WEST);
-		Liste.remove(Position);
-		Position.setOrientation(Orientation.NORTH);
-		Liste.remove(Position);
-		Position.setOrientation(Orientation.EAST);
-		Liste.remove(Position);
-		Position.setOrientation(Orientation.SOUTH);
-		Liste.remove(Position);
-		return Liste;
-	}
+	
 	CavePosition Ziel=null;
 }

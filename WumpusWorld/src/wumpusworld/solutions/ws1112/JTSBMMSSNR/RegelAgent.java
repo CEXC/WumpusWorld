@@ -49,6 +49,7 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent implements Comparab
 		if(AltePositionen.size() > 3)
 			AltePositionen.removeLast();
 		
+		// Update der StatusListe um aktuelle Situation wiederzuspiegeln
 		for(SituationsStatus Status : StatusListe) {
 			Status.updateStatus(AltePositionen, Nachbarschaft, Wahrnehmung, Blickrichtung);
 		}
@@ -76,6 +77,7 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent implements Comparab
 		return bewegeAgenten(Aktion.Ziel);
 	}
 	
+	// nur fuer direkt benachbarte Felder gedacht
 	protected AgentAction bewegeAgenten(CavePosition Ziel) {
 		// Blickrichtung stimmt nicht? => drehen!
 		if(Blickrichtung != getZielrichtung(Ziel))

@@ -8,6 +8,9 @@ import model.wumpusworld.Orientation;
 import model.wumpusworld.environment.CavePosition;
 import model.wumpusworld.environment.NeighbourhoodPerception;
 
+// kapselt Aktionen die zu Regeln hinzugefuegt werden koennen
+// und stellt abgeleiteten Klassen einige Hilfsfunktionen zur
+// Verfuegung
 public abstract class RegelAktion implements Comparable<RegelAktion> {
 
 	final RegelAktionID ID;
@@ -35,6 +38,20 @@ public abstract class RegelAktion implements Comparable<RegelAktion> {
 			return false;
 		return true;
 	}
+	
+	// Entferne die Position aus der Liste
+	protected LinkedList<CavePosition> removePosition(CavePosition Position, LinkedList<CavePosition> Liste) {
+		Position.setOrientation(Orientation.WEST);
+		Liste.remove(Position);
+		Position.setOrientation(Orientation.NORTH);
+		Liste.remove(Position);
+		Position.setOrientation(Orientation.EAST);
+		Liste.remove(Position);
+		Position.setOrientation(Orientation.SOUTH);
+		Liste.remove(Position);
+		return Liste;
+	}
+	
 	public int ZaehleGold(CaveGround[] Felder){
 		int anzahl = 0;
 		for(CaveGround feld : Felder){

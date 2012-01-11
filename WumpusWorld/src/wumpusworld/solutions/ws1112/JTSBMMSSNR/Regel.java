@@ -7,6 +7,13 @@ import model.wumpusworld.Orientation;
 import model.wumpusworld.environment.CavePosition;
 import model.wumpusworld.environment.NeighbourhoodPerception;
 
+
+// die Klasse Regel ermoeglicht uns die Speicherung von
+// Situationen und der daraufhin auszufuehrenden Aktionen
+// dafuer gibt es die zwei Funktionen addStatus und addAktion
+// der Agent braucht dann nur noch mittels IstRegelAnwendbar ueberpruefen
+// ob die Regel zu gebrauchen ist und dann mittels berechneRegelAktion
+// die Aktion abfragen
 public class Regel implements Comparable<Regel> {
 	// StatusListe zur Beschreibung der Situation
 	LinkedList<SituationsStatus> StatusListe = new LinkedList<SituationsStatus>();
@@ -143,8 +150,8 @@ public class Regel implements Comparable<Regel> {
 	}
 	
 	public Regel(Regel R) {
-		StatusListe.addAll(R.StatusListe);
-		AktionenListe.addAll(R.AktionenListe);
+		StatusListe.addAll(new LinkedList<SituationsStatus>(R.StatusListe));
+		AktionenListe.addAll(new LinkedList<RegelAktion> (R.AktionenListe));
 		Prioritaet = R.Prioritaet;
 		
 		Aktion = R.Aktion;

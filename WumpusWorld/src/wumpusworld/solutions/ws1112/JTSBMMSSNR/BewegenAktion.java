@@ -85,16 +85,5 @@ public class BewegenAktion extends RegelAktion {
 		return Aktion;
 	}
 	
-	private LinkedList<CavePosition> removePosition(CavePosition Position, LinkedList<CavePosition> Liste) {
-		Position.setOrientation(Orientation.WEST);
-		Liste.remove(Position);
-		Position.setOrientation(Orientation.NORTH);
-		Liste.remove(Position);
-		Position.setOrientation(Orientation.EAST);
-		Liste.remove(Position);
-		Position.setOrientation(Orientation.SOUTH);
-		Liste.remove(Position);
-		return Liste;
-	}
 	CavePosition Ziel=null;
 }
