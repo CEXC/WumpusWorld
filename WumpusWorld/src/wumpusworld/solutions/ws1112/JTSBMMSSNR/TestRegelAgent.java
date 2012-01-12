@@ -42,12 +42,18 @@ public class TestRegelAgent {
 	    		AnzahlSimulationen = Integer.parseInt(args[i].substring(1,args[i].length()-1));
 	    	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> master
 	    	else if(args[i].startsWith("R") && args[i].endsWith("L") && args[i].length() > 2) {
 	    		NeuesSeed = Long.parseLong(args[i].substring(1,args[i].length()-1));
 	    		SimSystem.getRNGGenerator().setSeed(NeuesSeed);
 	    		SeedErhalten = true;
 	    	}
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
 	    }
 	    
@@ -60,6 +66,7 @@ public class TestRegelAgent {
     
 	    
 	    R.addStatus(new GoldGesehen(true));
+<<<<<<< HEAD
 <<<<<<< HEAD
 	    R.setGoldklumpenAufheben(true);
 	    R.setPrioritaet(70);
@@ -81,6 +88,8 @@ public class TestRegelAgent {
 	    Regeln.add(new Regel(R));*/
 	    
 =======
+=======
+>>>>>>> master
 	    R.addAktion(new GoldaufhebenAktion(100));
 	    R.setPrioritaet(70);
 	    Regeln.add(new Regel(R));
@@ -103,6 +112,9 @@ public class TestRegelAgent {
 	    R.setPrioritaet(10);
 	    Regeln.add(new Regel(R));
 	    
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
 	    for(int i=0; i<AnzahlSimulationen; i++) {
 			int Ergebnis = 0;

@@ -37,8 +37,14 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 		Blickrichtung = getCavePosition().getOrientation();
 		Nachbarschaft = Wahrnehmung.getNeighbourHood();
 <<<<<<< HEAD
+<<<<<<< HEAD
 		AltePositionen.addFirst(getCavePosition());
 		if(AltePositionen.size() > 4)
+=======
+		if((AltePositionen.size() == 0) || !AltePositionen.getFirst().coordinatesEqual(getCavePosition()))
+			AltePositionen.addFirst(getCavePosition().makeCopy());
+		if(AltePositionen.size() > 3)
+>>>>>>> master
 =======
 		if((AltePositionen.size() == 0) || !AltePositionen.getFirst().coordinatesEqual(getCavePosition()))
 			AltePositionen.addFirst(getCavePosition().makeCopy());
@@ -56,7 +62,12 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 			if(NR.IstRegelAnwendbar(StatusListe)) {
 				// Regel anwenden
 <<<<<<< HEAD
+<<<<<<< HEAD
 				AgentAction Aktion = AktionAusfuehren(NR.berechneRegelAktion(Wahrnehmung, AltePositionen));
+=======
+				AgentAction Aktion = AktionAusfuehren(NR.berechneRegelAktion(Wahrnehmung, AltePositionen,
+														StatusListe));
+>>>>>>> master
 =======
 				AgentAction Aktion = AktionAusfuehren(NR.berechneRegelAktion(Wahrnehmung, AltePositionen,
 														StatusListe));
@@ -70,7 +81,11 @@ public class RegelAgent extends NeighbourhoodPerceivingAgent {
 	}
 	
 <<<<<<< HEAD
+<<<<<<< HEAD
 	protected AgentAction AktionAusfuehren(RegelAktion Aktion) {
+=======
+	protected AgentAction AktionAusfuehren(AgentenAktion Aktion) {
+>>>>>>> master
 =======
 	protected AgentAction AktionAusfuehren(AgentenAktion Aktion) {
 >>>>>>> master

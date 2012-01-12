@@ -1,10 +1,16 @@
 package wumpusworld.solutions.ws1112.JTSBMMSSNR;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.LinkedList;
 
 import model.wumpusworld.CaveGround;
 import model.wumpusworld.CaveGroundType;
+=======
+import java.util.Collections;
+import java.util.LinkedList;
+
+>>>>>>> master
 =======
 import java.util.Collections;
 import java.util.LinkedList;
@@ -16,6 +22,7 @@ import model.wumpusworld.environment.NeighbourhoodPerception;
 public class Regel implements Comparable<Regel> {
 	// StatusListe zur Beschreibung der Situation
 	LinkedList<SituationsStatus> StatusListe = new LinkedList<SituationsStatus>();
+<<<<<<< HEAD
 <<<<<<< HEAD
 	
 	// Aktionen, die bei der Situation ausgefuehrt werden sollen
@@ -29,12 +36,17 @@ public class Regel implements Comparable<Regel> {
 	// berechnet
 	RegelAktion Aktion = new RegelAktion();
 =======
+=======
+>>>>>>> master
 	// Aktionen, die bei der Situation ausgefuehrt werden sollen
 	// sie werden von hoher zu niedriger Prioritaet durchprobiert
 	LinkedList<RegelAktion> AktionenListe = new LinkedList<RegelAktion>();
 	
 	// berechnet
 	AgentenAktion Aktion = new AgentenAktion();
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
 
 	// Prioritaet groesser ist wichtiger Prioritaet >= 1
@@ -46,7 +58,13 @@ public class Regel implements Comparable<Regel> {
 	LinkedList<CavePosition> Positionen;
 	
 <<<<<<< HEAD
+<<<<<<< HEAD
 	public RegelAktion berechneRegelAktion(NeighbourhoodPerception Wahrnehmung, LinkedList<CavePosition> Positionen) {
+=======
+	public AgentenAktion berechneRegelAktion(NeighbourhoodPerception Wahrnehmung, 
+											LinkedList<CavePosition> Positionen,
+											LinkedList<SituationsStatus> AgentenStatusListe) {
+>>>>>>> master
 =======
 	public AgentenAktion berechneRegelAktion(NeighbourhoodPerception Wahrnehmung, 
 											LinkedList<CavePosition> Positionen,
@@ -56,6 +74,7 @@ public class Regel implements Comparable<Regel> {
 		this.Positionen = Positionen;
 		
 		Aktion = null;
+<<<<<<< HEAD
 <<<<<<< HEAD
 		// Diese Abarbeitungsreihenfolge ist jetzt erstmal fest eingebaut
 		// ggf. koennte man diese aber wiederum auch mittels Prioritaeten festlegen,
@@ -90,6 +109,8 @@ public class Regel implements Comparable<Regel> {
 		if(Aktion == null) {
 			Aktion = new RegelAktion();
 =======
+=======
+>>>>>>> master
 		for(RegelAktion RA : AktionenListe) {
 			Aktion = RA.berechneAktion(Positionen, Wahrnehmung.getNeighbourHood(), Wahrnehmung, AgentenStatusListe);
 			if(Aktion != null)
@@ -98,6 +119,7 @@ public class Regel implements Comparable<Regel> {
 		// Standard: nichts machen und bei aktueller Position bleiben...
 		if(Aktion == null) {
 			Aktion = new AgentenAktion();
+<<<<<<< HEAD
 >>>>>>> master
 			Aktion.Ziel = Positionen.getFirst();
 		}
@@ -262,6 +284,13 @@ public class Regel implements Comparable<Regel> {
 				return false;
 			if(Status.istAnzutreffen() != StatusListe.get(StatusListe.indexOf(Status)).istAnzutreffen())
 =======
+=======
+			Aktion.Ziel = Positionen.getFirst();
+		}
+		return Aktion;
+	}
+	
+>>>>>>> master
 	public boolean IstRegelAnwendbar(LinkedList<SituationsStatus> AgentenStatusListe) {
 		for(SituationsStatus Status : this.StatusListe) {
 			// Wenn der Status vom Agenten gar nicht zur Verfuegung gestellt wird,
@@ -269,6 +298,9 @@ public class Regel implements Comparable<Regel> {
 			if(!AgentenStatusListe.contains(Status))
 				return false;
 			if(Status.istAnzutreffen() != AgentenStatusListe.get(AgentenStatusListe.indexOf(Status)).istAnzutreffen())
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
 				return false;
 		}
@@ -280,6 +312,7 @@ public class Regel implements Comparable<Regel> {
 			StatusListe.add(Status);
 	}
 	
+<<<<<<< HEAD
 <<<<<<< HEAD
 	public int ZaehleGold(CaveGround[] Felder){
 		int anzahl = 0;
@@ -321,6 +354,8 @@ public class Regel implements Comparable<Regel> {
 			return false;
 		return true;
 =======
+=======
+>>>>>>> master
 	public void resetStatusListe() {
 		StatusListe.clear();
 	}
@@ -333,6 +368,9 @@ public class Regel implements Comparable<Regel> {
 	
 	public void resetAktionenListe() {
 		AktionenListe.clear();
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
 	}
 	
@@ -362,11 +400,14 @@ public class Regel implements Comparable<Regel> {
 		}
 			
 <<<<<<< HEAD
+<<<<<<< HEAD
 		if((GoldklumpenAufheben != R.GoldklumpenAufheben) || (PfeilAbschiessen != R.PfeilAbschiessen) ||
 				(Bewegen != R.Bewegen) || (Warten != R.Warten) || (Fliehen != R.Fliehen) || 
 				(Jagen!= R.Jagen))
 			return false;
 =======
+=======
+>>>>>>> master
 		// AktionenListe
 		if(AktionenListe.size() != R.AktionenListe.size())
 			return false;
@@ -374,6 +415,9 @@ public class Regel implements Comparable<Regel> {
 			if(!R.AktionenListe.contains(RA))
 				return false;
 		}
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
 		
 		return true;
@@ -395,7 +439,11 @@ public class Regel implements Comparable<Regel> {
 		return VergleichOhneP(R);
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> master
 =======
 	
 >>>>>>> master
@@ -403,6 +451,7 @@ public class Regel implements Comparable<Regel> {
 		if(Prioritaet >= 1) 
 			this.Prioritaet = Prioritaet;
 	}
+<<<<<<< HEAD
 <<<<<<< HEAD
 	public int getPrioritaet() {
 		return Prioritaet;
@@ -467,6 +516,8 @@ public class Regel implements Comparable<Regel> {
 		Fliehen = R.Fliehen;
 		Jagen = R.Jagen;
 =======
+=======
+>>>>>>> master
 	
 	public int getPrioritaet() {
 		return Prioritaet;
@@ -475,6 +526,9 @@ public class Regel implements Comparable<Regel> {
 	public Regel(Regel R) {
 		StatusListe.addAll(R.StatusListe);
 		AktionenListe.addAll(R.AktionenListe);
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
 		Prioritaet = R.Prioritaet;
 		

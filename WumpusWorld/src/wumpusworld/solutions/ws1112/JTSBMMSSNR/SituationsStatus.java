@@ -10,7 +10,12 @@ public abstract class SituationsStatus {
 	boolean Anzutreffen = false;
 	final SituationsStatusID ID;
 <<<<<<< HEAD
+<<<<<<< HEAD
 	public abstract void updateStatus(LinkedList<CavePosition> Positionen, CaveGround Nachbarschaft[], 
+=======
+	public abstract void updateStatus(LinkedList<CavePosition> Positionen, 
+										CaveGround Nachbarschaft[], 
+>>>>>>> master
 =======
 	public abstract void updateStatus(LinkedList<CavePosition> Positionen, 
 										CaveGround Nachbarschaft[], 

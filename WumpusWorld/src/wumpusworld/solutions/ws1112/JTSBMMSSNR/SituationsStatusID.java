@@ -7,7 +7,12 @@ public enum SituationsStatusID {
 	GOLDGESEHEN,
 	NICHTSFESTGESTELLT,
 <<<<<<< HEAD
+<<<<<<< HEAD
 	GEFANGEN
+=======
+	GEFANGEN,
+	RANDGESEHEN
+>>>>>>> master
 =======
 	GEFANGEN,
 	RANDGESEHEN

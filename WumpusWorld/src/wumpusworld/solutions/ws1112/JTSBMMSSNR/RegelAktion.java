@@ -1,6 +1,7 @@
 package wumpusworld.solutions.ws1112.JTSBMMSSNR;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import model.wumpusworld.environment.CavePosition;
 
 public class RegelAktion {
@@ -8,6 +9,8 @@ public class RegelAktion {
 	public boolean PfeilAbschiessen = false;
 	public boolean GoldAufheben = false;
 =======
+=======
+>>>>>>> master
 import java.util.LinkedList;
 
 import model.wumpusworld.CaveGround;
@@ -118,5 +121,8 @@ public abstract class RegelAktion implements Comparable<RegelAktion> {
 		
 		return true;
 	}
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
 }

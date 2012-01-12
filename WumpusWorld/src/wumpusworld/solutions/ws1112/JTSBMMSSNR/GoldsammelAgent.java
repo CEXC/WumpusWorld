@@ -8,8 +8,11 @@ import model.wumpusworld.environment.Cave;
 import model.wumpusworld.environment.CompleteCavePerception;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import james.SimSystem;
 import james.core.math.random.generators.IRandom;
+=======
+>>>>>>> master
 =======
 >>>>>>> master
 import james.core.util.eventset.Entry;
@@ -40,7 +43,11 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 	// Liste aller Goldklumpen usw. erstellen
 	boolean Initialisiert=false;
 <<<<<<< HEAD
+<<<<<<< HEAD
 	IRandom ZufallsZahlenGen = null;
+=======
+	//IRandom ZufallsZahlenGen = null;
+>>>>>>> master
 =======
 	//IRandom ZufallsZahlenGen = null;
 >>>>>>> master
@@ -335,7 +342,10 @@ public class GoldsammelAgent extends CompleteCavePerceivingAgent {
 		Blickrichtung = getCavePosition().getOrientation();
 		if(!Initialisiert) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 			ZufallsZahlenGen = SimSystem.getRNGGenerator().getNextRNG();
+=======
+>>>>>>> master
 =======
 >>>>>>> master
 			// Fuege alle Goldklumpenpositionen zur Goldklumpen Liste hinzu
